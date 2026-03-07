@@ -5,13 +5,26 @@ import { motion, useInView } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Send, CheckCircle } from "lucide-react";
 
-// Store hours — simple hardcoded logic for demo
+// Store hours logic
 function useStoreOpen() {
   const now = new Date();
+  const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
   const hour = now.getHours();
-  // Open 7:00 AM – 11:00 PM every day
-  const isOpen = hour >= 7 && hour < 23;
-  return { isOpen, closesAt: "11:00 PM" };
+  let isOpen = false;
+  let closesAt = "";
+
+  if (day >= 1 && day <= 5) { // Monday to Friday
+    isOpen = hour >= 7 && hour < 23;
+    closesAt = "11:00 PM";
+  } else if (day === 6) { // Saturday
+    isOpen = hour >= 8 && hour < 23;
+    closesAt = "11:00 PM";
+  } else if (day === 0) { // Sunday
+    isOpen = hour >= 9 && hour < 22;
+    closesAt = "10:00 PM";
+  }
+
+  return { isOpen, closesAt };
 }
 
 const hours = [
@@ -64,7 +77,7 @@ export default function ContactPage() {
             className="mt-4 text-base font-light max-w-lg mx-auto"
             style={{ color: "rgba(245,245,245,0.45)" }}
           >
-            We&apos;re always happy to hear from you. Visit us, call us, or send a message.
+            We're always happy to hear from you. Visit us, call us, or send a message.
           </p>
         </motion.div>
       </div>
@@ -138,7 +151,7 @@ export default function ContactPage() {
                   Store Address
                 </p>
                 <p className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>
-                  3455 S Durango Dr, Suite 110<br />Las Vegas, NV 89117
+                  HERAN mart
                 </p>
               </div>
             </div>
@@ -223,8 +236,7 @@ export default function ContactPage() {
             }}
           >
             <iframe
-              title="HERAN Mart Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.123456789!2d-115.2804!3d36.1217!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c8c43bc1a40b15%3A0x9b7a7a7a7a7a7a7a!2sLas+Vegas%2C+NV!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d664.7178817412688!2d-115.24390690000001!3d36.046428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c8c98c3feb2a1b%3A0xc553741073a10d26!2sHERAN%20mart!5e1!3m2!1sen!2set!4v1772850849581!5m2!1sen!2set"
               width="100%"
               height="100%"
               style={{
@@ -235,7 +247,7 @@ export default function ContactPage() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-            />
+            ></iframe>
             {/* Gold overlay frame */}
             <div
               className="absolute inset-0 pointer-events-none rounded-3xl"
@@ -274,7 +286,7 @@ export default function ContactPage() {
               >
                 <CheckCircle size={48} style={{ color: "#4ade80" }} />
                 <p className="text-lg font-medium" style={{ color: "#F5F5F5" }}>Message sent!</p>
-                <p className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>We&apos;ll get back to you soon.</p>
+                <p className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>We'll get back to you soon.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">

@@ -15,7 +15,17 @@ export default function Home() {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
+    // Check if the intro has been seen in this session
+    const introSeen = sessionStorage.getItem("introSeen");
+    if (introSeen) {
+      setIntroComplete(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (introComplete) {
+      // Mark the intro as seen for this session
+      sessionStorage.setItem("introSeen", "true");
       // Small delay so the fade-out of intro overlaps the fade-in of content
       const t = setTimeout(() => setShowContent(true), 200);
       return () => clearTimeout(t);
@@ -27,7 +37,7 @@ export default function Home() {
     if (!showContent) return;
     let lenis: import("@studio-freight/lenis").default | null = null;
     import("@studio-freight/lenis").then(({ default: Lenis }) => {
-      lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+      lenis = new Lenis({ lerp: 0.05, smoothWheel: true });
       function raf(time: number) {
         lenis!.raf(time);
         requestAnimationFrame(raf);
