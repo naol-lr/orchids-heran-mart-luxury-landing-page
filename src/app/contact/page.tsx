@@ -1,36 +1,47 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Send, CheckCircle } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Send, CheckCircle, Youtube } from "lucide-react";
 
 // Store hours logic
 function useStoreOpen() {
-  const now = new Date();
-  const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  const hour = now.getHours();
-  let isOpen = false;
-  let closesAt = "";
+  const [isOpen, setIsOpen] = useState(false);
+  const [closesAt, setClosesAt] = useState("");
 
-  if (day >= 1 && day <= 5) { // Monday to Friday
-    isOpen = hour >= 7 && hour < 23;
-    closesAt = "11:00 PM";
-  } else if (day === 6) { // Saturday
-    isOpen = hour >= 8 && hour < 23;
-    closesAt = "11:00 PM";
-  } else if (day === 0) { // Sunday
-    isOpen = hour >= 9 && hour < 22;
-    closesAt = "10:00 PM";
-  }
+  useEffect(() => {
+    const now = new Date();
+    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const hour = now.getHours();
+
+    let open = false;
+    let closingTime = "";
+
+    if (day >= 1 && day <= 6) { // Monday to Saturday
+      open = hour >= 10 && hour < 21; // 10 AM to 9 PM
+      closingTime = "9:00 PM";
+    } else if (day === 0) { // Sunday
+      open = hour >= 10 && hour < 20; // 10 AM to 8 PM
+      closingTime = "8:00 PM";
+    }
+
+    setIsOpen(open);
+    setClosesAt(closingTime);
+  }, []);
 
   return { isOpen, closesAt };
 }
 
 const hours = [
-  { day: "Monday – Friday", time: "7:00 AM – 11:00 PM" },
-  { day: "Saturday", time: "8:00 AM – 11:00 PM" },
-  { day: "Sunday", time: "9:00 AM – 10:00 PM" },
+  { day: "Monday – Saturday", time: "10:00 AM – 9:00 PM" },
+  { day: "Sunday", time: "10:00 AM – 8:00 PM" },
+];
+
+const socialLinks = [
+    { icon: Instagram, label: "@heranmart", sub: "Follow on Instagram", color: "#E1306C", href: "#" },
+    { icon: Facebook, label: "HERAN Mart", sub: "Like on Facebook", color: "#1877F2", href: "#" },
+    { icon: Youtube, label: "@heran.mart3", sub: "Watch on TikTok", color: "#000000", href: "https://www.tiktok.com/@heran.mart3/video/7593497112403397902" },
 ];
 
 export default function ContactPage() {
@@ -151,7 +162,7 @@ export default function ContactPage() {
                   Store Address
                 </p>
                 <p className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>
-                  HERAN mart
+                3455 S Durango Dr, Las Vegas NV
                 </p>
               </div>
             </div>
@@ -167,13 +178,13 @@ export default function ContactPage() {
               <div>
                 <p className="text-sm font-medium mb-0.5" style={{ color: "#F5F5F5" }}>Phone</p>
                 <a
-                  href="tel:+17025550123"
+                  href="tel:+17024789397"
                   className="text-sm font-light transition-colors duration-200"
                   style={{ color: "rgba(245,245,245,0.5)" }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#D4AF37")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(245,245,245,0.5)")}
                 >
-                  +1 (702) 555-0123
+                  +1 (702) 478-9397
                 </a>
               </div>
             </div>
@@ -404,14 +415,14 @@ export default function ContactPage() {
               </p>
 
               <div className="space-y-4">
-                {[
-                  { icon: Instagram, label: "@heranmart", sub: "Follow on Instagram", color: "#E1306C" },
-                  { icon: Facebook, label: "HERAN Mart", sub: "Like on Facebook", color: "#1877F2" },
-                ].map((s) => {
+                {socialLinks.map((s) => {
                   const Icon = s.icon;
                   return (
-                    <div
+                    <a
                       key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
                       style={{
                         background: "rgba(255,255,255,0.03)",
@@ -436,7 +447,7 @@ export default function ContactPage() {
                         <p className="text-sm font-medium" style={{ color: "#F5F5F5" }}>{s.label}</p>
                         <p className="text-xs font-light" style={{ color: "rgba(245,245,245,0.4)" }}>{s.sub}</p>
                       </div>
-                    </div>
+                    </a>
                   );
                 })}
               </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { VisualEditsMessenger } from "orchids-visual-edits";
+import { CartProvider } from "@/context/CartContext"; // Import the CartProvider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased bg-[#0D0D0D] text-[#F5F5F5]`}
       >
-        {children}
+        <CartProvider> {/* Wrap the children with the CartProvider */}
+          {children}
+        </CartProvider>
         <VisualEditsMessenger />
       </body>
     </html>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -122,7 +122,7 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link
-            href="/#shop"
+            href="/shop"
             className="group flex items-center gap-3 px-8 py-4 rounded-2xl font-medium tracking-wide text-sm transition-all duration-300"
             style={{
               background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",

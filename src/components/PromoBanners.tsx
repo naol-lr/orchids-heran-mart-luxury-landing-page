@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
@@ -11,10 +11,7 @@ const promos = [
     headline: "20% OFF",
     subtitle: "All Snacks & Confectionery",
     cta: "Shop Snacks",
-    accent: "#D4AF37",
-    bg: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.03) 100%)",
-    border: "rgba(212,175,55,0.25)",
-    glow: "rgba(212,175,55,0.15)",
+    accentColor: "#D4AF37",
     emoji: "🍿",
   },
   {
@@ -23,10 +20,7 @@ const promos = [
     headline: "Fresh Produce",
     subtitle: "Farm-fresh fruits & vegetables every weekend",
     cta: "See Produce",
-    accent: "#4ade80",
-    bg: "linear-gradient(135deg, rgba(27,48,34,0.5) 0%, rgba(27,48,34,0.2) 100%)",
-    border: "rgba(74,222,128,0.25)",
-    glow: "rgba(74,222,128,0.12)",
+    accentColor: "#4ade80",
     emoji: "🥦",
   },
   {
@@ -35,10 +29,7 @@ const promos = [
     headline: "Family Bundle",
     subtitle: "Household essentials at one unbeatable price",
     cta: "Get Bundle",
-    accent: "#D4AF37",
-    bg: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(27,48,34,0.15) 100%)",
-    border: "rgba(212,175,55,0.25)",
-    glow: "rgba(212,175,55,0.15)",
+    accentColor: "#D4AF37",
     emoji: "🧺",
   },
 ];
@@ -94,28 +85,16 @@ export default function PromoBanners() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: i * 0.15, duration: 0.7 }}
-                className="group relative rounded-3xl overflow-hidden cursor-pointer"
+                className="group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-300"
                 style={{
-                  background: promo.bg,
-                  border: `1px solid ${promo.border}`,
+                  background: `linear-gradient(135deg, ${promo.accentColor}14 0%, ${promo.accentColor}08 100%)`,
+                  border: `1px solid ${promo.accentColor}40`,
                   backdropFilter: "blur(20px)",
-                  transition: "all 0.4s cubic-bezier(0.4,0,0.2,1)",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = `0 0 40px ${promo.glow}, 0 8px 40px rgba(0,0,0,0.4)`;
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-6px)";
-                  (e.currentTarget as HTMLElement).style.borderColor = promo.accent + "60";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                  (e.currentTarget as HTMLElement).style.borderColor = promo.border;
                 }}
               >
                 {/* Big emoji watermark */}
                 <div
-                  className="absolute top-4 right-4 text-7xl select-none pointer-events-none"
-                  style={{ opacity: 0.12 }}
+                  className="absolute top-4 right-4 text-7xl select-none pointer-events-none opacity-10"
                 >
                   {promo.emoji}
                 </div>
@@ -126,15 +105,15 @@ export default function PromoBanners() {
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center"
                       style={{
-                        background: `${promo.accent}20`,
-                        border: `1px solid ${promo.accent}40`,
+                        background: `${promo.accentColor}20`,
+                        border: `1px solid ${promo.accentColor}40`,
                       }}
                     >
-                      <Icon size={14} style={{ color: promo.accent }} />
+                      <Icon size={14} style={{ color: promo.accentColor }} />
                     </div>
                     <span
                       className="text-xs tracking-[0.25em] uppercase font-medium"
-                      style={{ color: promo.accent }}
+                      style={{ color: promo.accentColor }}
                     >
                       {promo.tag}
                     </span>
@@ -145,8 +124,8 @@ export default function PromoBanners() {
                     className="font-[family-name:var(--font-playfair)] font-bold mb-2 leading-tight"
                     style={{
                       fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
-                      color: promo.accent,
-                      textShadow: `0 0 30px ${promo.accent}60`,
+                      color: promo.accentColor,
+                      textShadow: `0 0 30px ${promo.accentColor}60`,
                     }}
                   >
                     {promo.headline}
@@ -164,9 +143,9 @@ export default function PromoBanners() {
                   <button
                     className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium tracking-wider uppercase transition-all duration-300"
                     style={{
-                      background: `${promo.accent}15`,
-                      color: promo.accent,
-                      border: `1px solid ${promo.accent}30`,
+                      background: `${promo.accentColor}15`,
+                      color: promo.accentColor,
+                      border: `1px solid ${promo.accentColor}30`,
                     }}
                   >
                     {promo.cta}
@@ -178,7 +157,7 @@ export default function PromoBanners() {
                 <div
                   className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{
-                    background: `linear-gradient(to right, transparent, ${promo.accent}80, transparent)`,
+                    background: `linear-gradient(to right, transparent, ${promo.accentColor}80, transparent)`,
                   }}
                 />
               </motion.div>
@@ -196,18 +175,8 @@ export default function PromoBanners() {
             background:
               "linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(27,48,34,0.25) 50%, rgba(212,175,55,0.06) 100%)",
             border: "1px solid rgba(212,175,55,0.2)",
+            backdropFilter: "blur(20px)",
             transition: "all 0.4s ease",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.boxShadow =
-              "0 0 50px rgba(212,175,55,0.1), 0 8px 40px rgba(0,0,0,0.4)";
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "rgba(212,175,55,0.4)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.boxShadow = "none";
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "rgba(212,175,55,0.2)";
           }}
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10">
@@ -232,20 +201,12 @@ export default function PromoBanners() {
               </p>
             </div>
             <button
-              className="whitespace-nowrap px-8 py-4 rounded-2xl text-sm font-medium tracking-wider uppercase transition-all duration-300"
+              className="whitespace-nowrap px-8 py-4 rounded-2xl text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:shadow-xl"
               style={{
                 background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",
                 color: "#0D0D0D",
                 boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
               }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 4px 30px rgba(212,175,55,0.5)")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 4px 20px rgba(212,175,55,0.3)")
-              }
             >
               Join Free
             </button>

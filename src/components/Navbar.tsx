@@ -4,34 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, User, Menu, X, ChevronDown } from 'lucide-react';
+import { ShoppingBag, User, Menu, X } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
-  { label: 'Shop', href: '/#shop' },
+  { label: 'Shop', href: '/shop' },
   { label: 'About Us', href: '/about' },
   { label: 'Contact', href: '/contact' },
-];
-
-const products = [
-    {
-      category: "Ethiopian Products",
-      items: [
-        { name: "Teff", href: "/products/teff" },
-        { name: "Enjera", href: "/products/enjera" },
-        { name: "Butter", href: "/products/butter" },
-        { name: "Honey", href: "/products/honey" },
-        { name: "Jewelries", href: "/products/jewelries" },
-        { name: "Divine Pictures", href: "/products/divine-pictures" },
-      ],
-    },
-    {
-      category: "American Products",
-      items: [
-        { name: "Shampoo", href: "/products/shampoo" },
-        { name: "Conditioner", href: "/products/conditioner" },
-      ],
-    },
 ];
 
 interface NavbarProps {
@@ -41,7 +21,7 @@ interface NavbarProps {
 export default function Navbar({ logoVisible = true }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [shopMenuOpen, setShopMenuOpen] = useState(false);
+  const { cartCount } = useCart();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -104,58 +84,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                 const isActive =
                   link.href === '/'
                     ? pathname === '/'
-                    : pathname.startsWith(link.href.replace('/#', '/'));
-                
-                if (link.label === 'Shop') {
-                  return (
-                    <div 
-                      className="relative"
-                      onMouseEnter={() => setShopMenuOpen(true)}
-                      onMouseLeave={() => setShopMenuOpen(false)}
-                    >
-                      <button
-                        className="relative flex items-center gap-1 text-sm tracking-wider uppercase font-light transition-colors duration-200 group"
-                        style={{
-                          color: isActive ? '#D4AF37' : 'rgba(245,245,245,0.7)',
-                        }}
-                      >
-                        {link.label}
-                        <ChevronDown size={16} />
-                        <span
-                          className="absolute -bottom-1 left-0 h-px bg-[#D4AF37] transition-all duration-300 group-hover:w-full"
-                          style={{ width: isActive ? '100%' : '0%' }}
-                        />
-                      </button>
-                      <AnimatePresence>
-                        {shopMenuOpen && (
-                          <motion.div 
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-black ring-1 ring-white ring-opacity-5 focus:outline-none"
-                          >
-                            <div className="py-1">
-                              {products.map((productCategory) => (
-                                <div key={productCategory.category} className="px-4 py-2">
-                                  <p className="text-xs uppercase font-bold text-gray-400">{productCategory.category}</p>
-                                  {productCategory.items.map((item) => (
-                                    <Link
-                                      key={item.name}
-                                      href={item.href}
-                                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
-                                    >
-                                      {item.name}
-                                    </Link>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )
-                }
+                    : pathname.startsWith(link.href);
 
                 return (
                   <Link
@@ -185,13 +114,22 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
               >
                 <User size={18} />
               </button>
-              <button
-                className="p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(212,175,55,0.1)] hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+              <Link
+                href="/cart"
+                className="relative p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(212,175,55,0.1)] hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
                 aria-label="Cart"
               >
                 <ShoppingBag size={18} />
-              </button>
+                {cartCount > 0 && (
+                  <motion.div 
+                    initial={{scale: 0}}
+                    animate={{scale: 1}}
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-[#0D0D0D] text-xs flex items-center justify-center font-bold">
+                    {cartCount}
+                  </motion.div>
+                )}
+              </Link>
               <Link
                 href="/#contact"
                 className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200"

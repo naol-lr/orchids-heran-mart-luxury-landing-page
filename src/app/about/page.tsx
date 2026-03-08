@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -42,15 +42,15 @@ function ReviewCarousel() {
   const next = () => setActive((a) => (a + 1) % reviews.length);
 
   return (
-    <div ref={ref} className="relative max-w-3xl mx-auto py-16">
+    <div ref={ref} className="relative mx-auto max-w-3xl py-16">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
-        className="text-center mb-12"
+        className="mb-12 text-center"
       >
         <span
-          className="text-xs tracking-[0.4em] uppercase font-light mb-3 block"
+          className="mb-3 block text-xs font-light uppercase tracking-[0.4em]"
           style={{ color: "rgba(212,175,55,0.6)" }}
         >
           Customer Reviews
@@ -86,32 +86,32 @@ function ReviewCarousel() {
           >
             <Quote size={36} className="mx-auto mb-6" style={{ color: "rgba(212,175,55,0.3)" }} />
 
-            <div className="flex justify-center gap-1 mb-6">
+            <div className="mb-6 flex justify-center gap-1">
               {[...Array(reviews[active].rating)].map((_, i) => (
                 <Star key={i} size={16} fill="#D4AF37" style={{ color: "#D4AF37" }} />
               ))}
             </div>
 
             <p
-              className="font-[family-name:var(--font-playfair)] italic text-lg md:text-xl leading-relaxed mb-8"
+              className="mb-8 font-[family-name:var(--font-playfair)] text-lg italic leading-relaxed md:text-xl"
               style={{ color: "rgba(245,245,245,0.85)" }}
             >
               &ldquo;{reviews[active].quote}&rdquo;
             </p>
 
-            <p className="font-semibold text-sm" style={{ color: "#D4AF37" }}>
+            <p className="text-sm font-semibold" style={{ color: "#D4AF37" }}>
               {reviews[active].name}
             </p>
-            <p className="text-xs mt-1 font-light" style={{ color: "rgba(245,245,245,0.35)" }}>
+            <p className="mt-1 text-xs font-light" style={{ color: "rgba(245,245,245,0.35)" }}>
               {reviews[active].date}
             </p>
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex items-center justify-center gap-4 mt-8">
+        <div className="mt-8 flex items-center justify-center gap-4">
           <button
             onClick={prev}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+            className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
             style={{
               background: "rgba(212,175,55,0.08)",
               border: "1px solid rgba(212,175,55,0.2)",
@@ -147,7 +147,7 @@ function ReviewCarousel() {
 
           <button
             onClick={next}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+            className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
             style={{
               background: "rgba(212,175,55,0.08)",
               border: "1px solid rgba(212,175,55,0.2)",
@@ -175,7 +175,6 @@ interface StoryItem {
   title: string;
   body: string;
   emoji: string;
-  isEven: boolean;
 }
 
 function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
@@ -188,7 +187,7 @@ function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
       initial={{ opacity: 0, x: isEven ? -40 : 40 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.7 }}
-      className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-3xl p-8 md:p-12"
+      className="grid grid-cols-1 items-center gap-8 rounded-3xl p-8 md:grid-cols-2 md:p-12"
       style={{
         background: "rgba(26,26,26,0.6)",
         border: "1px solid rgba(212,175,55,0.12)",
@@ -197,19 +196,19 @@ function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
     >
       <div className={isEven ? "order-1" : "order-1 md:order-2"}>
         <span
-          className="text-xs tracking-[0.3em] uppercase font-light mb-3 block"
+          className="mb-3 block text-xs font-light uppercase tracking-[0.3em]"
           style={{ color: "rgba(212,175,55,0.6)" }}
         >
           {s.label}
         </span>
         <h2
-          className="font-[family-name:var(--font-playfair)] font-bold text-2xl md:text-3xl mb-4"
+          className="mb-4 font-[family-name:var(--font-playfair)] text-2xl font-bold md:text-3xl"
           style={{ color: "#F5F5F5" }}
         >
           {s.title}
         </h2>
         <p
-          className="text-sm md:text-base font-light leading-relaxed"
+          className="text-sm font-light leading-relaxed md:text-base"
           style={{ color: "rgba(245,245,245,0.55)" }}
         >
           {s.body}
@@ -217,7 +216,7 @@ function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
       </div>
 
       <div
-        className={`${isEven ? "order-2" : "order-2 md:order-1"} flex items-center justify-center h-40 md:h-56 rounded-2xl`}
+        className={`flex h-40 items-center justify-center rounded-2xl ${isEven ? "order-2" : "order-2 md:order-1"}`}
         style={{
           background: "rgba(212,175,55,0.04)",
           border: "1px solid rgba(212,175,55,0.1)",
@@ -257,14 +256,14 @@ export default function AboutPage() {
 
       {/* Hero header */}
       <div
-        className="relative pt-32 pb-20 px-6 text-center overflow-hidden"
+        className="relative overflow-hidden px-6 pt-32 pb-20 text-center"
         style={{
           background:
             "radial-gradient(ellipse at 50% 30%, rgba(27,48,34,0.3) 0%, transparent 60%), #0D0D0D",
         }}
       >
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+          className="pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{ background: "radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%)" }}
         />
         <motion.div
@@ -274,7 +273,7 @@ export default function AboutPage() {
           className="relative z-10"
         >
           <span
-            className="text-xs tracking-[0.4em] uppercase font-light mb-4 block"
+            className="mb-4 block text-xs font-light uppercase tracking-[0.4em]"
             style={{ color: "rgba(212,175,55,0.6)" }}
           >
             Our Identity
@@ -289,7 +288,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p
-            className="mt-6 text-base font-light max-w-xl mx-auto"
+            className="mx-auto mt-6 max-w-xl text-base font-light"
             style={{ color: "rgba(245,245,245,0.45)" }}
           >
             A neighborhood grocery store elevating the everyday — built on trust, quality, and community.
@@ -297,17 +296,17 @@ export default function AboutPage() {
         </motion.div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 pb-24">
+      <div className="mx-auto max-w-6xl px-6 pb-24">
         {/* Story sections */}
-        <div className="space-y-6 mb-16">
+        <div className="mb-16 space-y-6">
           {story.map((s, i) => (
-            <StoryCard key={s.label} s={{ ...s, isEven: i % 2 === 0 }} isEven={i % 2 === 0} />
+            <StoryCard key={s.label} s={s} isEven={i % 2 === 0} />
           ))}
         </div>
 
         {/* Gold divider */}
         <div
-          className="h-px my-4"
+          className="my-4 h-px"
           style={{
             background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
           }}
@@ -330,21 +329,21 @@ export default function AboutPage() {
           }}
         >
           <h3
-            className="font-[family-name:var(--font-playfair)] font-bold text-2xl md:text-3xl mb-3"
+            className="mb-3 font-[family-name:var(--font-playfair)] text-2xl font-bold md:text-3xl"
             style={{ color: "#F5F5F5" }}
           >
             Come Visit Us in Las Vegas
           </h3>
           <p
-            className="text-sm font-light mb-8 max-w-lg mx-auto"
+            className="mx-auto mb-8 max-w-lg text-sm font-light"
             style={{ color: "rgba(245,245,245,0.45)" }}
           >
             Experience HERAN Mart in person. We&apos;d love to welcome you to our store.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/contact"
-              className="px-8 py-4 rounded-2xl text-sm font-medium tracking-wider uppercase transition-all duration-300"
+              className="rounded-2xl px-8 py-4 text-sm font-medium uppercase tracking-wider transition-all duration-300"
               style={{
                 background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",
                 color: "#0D0D0D",
@@ -362,13 +361,8 @@ export default function AboutPage() {
               Get Directions
             </Link>
             <Link
-              href="/#shop"
-              className="px-8 py-4 rounded-2xl text-sm font-medium tracking-wider uppercase transition-all duration-300"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                color: "rgba(245,245,245,0.8)",
-                border: "1px solid rgba(212,175,55,0.2)",
-              }}
+              href="/shop"
+              className="rounded-2xl border border-[rgba(212,175,55,0.2)] bg-[rgba(255,255,255,0.04)] px-8 py-4 text-sm font-medium uppercase tracking-wider text-[rgba(245,245,245,0.8)] transition-all duration-300"
             >
               Browse Products
             </Link>
