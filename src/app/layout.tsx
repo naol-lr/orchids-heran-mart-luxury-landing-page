@@ -31,9 +31,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased bg-[#050505] text-[#F5F5F5] selection:bg-[rgba(193,163,106,0.3)] min-h-screen relative`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased bg-[#050505] text-[#F5F5F5] selection:bg-[rgba(193,163,106,0.3)] min-h-screen relative overflow-x-hidden w-full max-w-[100vw]`}
       >
         <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.03] bg-[url('https://upload.wikimedia.org/wikipedia/commons/a/a2/Noise_Texture.png')] mix-blend-overlay"></div>
         <div className="relative z-10">
