@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: path.resolve(__dirname, '../../'),
+// outputFileTracingRoot removed to fix Vercel build
   typescript: {
     ignoreBuildErrors: true,
   },
