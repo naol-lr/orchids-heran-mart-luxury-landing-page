@@ -37,8 +37,8 @@ export default function Home() {
   // Lenis smooth scroll
   useEffect(() => {
     if (!showContent) return;
-    let lenis: import("@studio-freight/lenis").default | null = null;
-    import("@studio-freight/lenis").then(({ default: Lenis }) => {
+    let lenis: import("lenis").default | null = null;
+    import("lenis").then(({ default: Lenis }) => {
       lenis = new Lenis({ lerp: 0.05, smoothWheel: true });
       function raf(time: number) {
         lenis!.raf(time);
