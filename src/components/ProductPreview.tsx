@@ -15,7 +15,7 @@ function ProductCard({ product, index, inView }: { product: Product; index: numb
       initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.08, duration: 0.6 }}
-      className="group relative overflow-hidden rounded-2xl border border-[rgba(212,175,55,0.12)] shadow-[0_2px_16px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[rgba(212,175,55,0.45)] hover:shadow-[0_0_30px_rgba(212,175,55,0.15),_0_8px_32px_rgba(0,0,0,0.4)]"
+      className="group relative overflow-hidden rounded-2xl border border-[rgba(193,163,106,0.12)] shadow-[0_2px_16px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[rgba(193,163,106,0.45)] hover:shadow-[0_0_30px_rgba(193,163,106,0.15),_0_8px_32px_rgba(0,0,0,0.4)]"
       style={{
         background: "rgba(26,26,26,0.8)",
         backdropFilter: "blur(20px)",
@@ -29,14 +29,14 @@ function ProductCard({ product, index, inView }: { product: Product; index: numb
         style={{ background: product.bg }}
       >
         <span
-          className="select-none text-6xl transition-transform duration-300 ease-out group-hover:scale-115 group-hover:rotate-5"
+          className="select-none text-7xl font-[family-name:var(--font-playfair)] italic font-light opacity-60 text-[#C1A36A] transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-3 group-hover:opacity-100"
         >
-          {product.emoji}
+          {product.name.charAt(0)}
         </span>
 
         {/* Badge */}
         <span
-          className="absolute left-3 top-3 rounded-full border border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.15)] px-2.5 py-1 text-xs font-medium tracking-wider text-[#D4AF37]"
+          className="absolute left-3 top-3 rounded-full border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-2.5 py-1 text-xs font-medium tracking-wider text-[#C1A36A]"
           style={{ backdropFilter: "blur(8px)" }}
         >
           {product.badge}
@@ -47,7 +47,7 @@ function ProductCard({ product, index, inView }: { product: Product; index: numb
       <div className="p-5">
         <p
           className="mb-1 text-xs font-light uppercase tracking-[0.25em]"
-          style={{ color: "rgba(212,175,55,0.5)" }}
+          style={{ color: "rgba(193,163,106,0.5)" }}
         >
           {product.category}
         </p>
@@ -61,11 +61,11 @@ function ProductCard({ product, index, inView }: { product: Product; index: numb
         <div className="flex items-center justify-between">
           <span
             className="text-xl font-bold"
-            style={{ color: "#D4AF37" }}
+            style={{ color: "#C1A36A" }}
           >
             {product.price}
           </span>
-           <div className="flex items-center gap-2 rounded-xl text-xs font-medium text-[rgba(245,245,245,0.5)] transition-all duration-200 group-hover:text-[#D4AF37]">
+           <div className="flex items-center gap-2 rounded-xl text-xs font-medium text-[rgba(245,245,245,0.5)] transition-all duration-200 group-hover:text-[#C1A36A]">
             View
             <ArrowRight size={13} />
           </div>
@@ -101,7 +101,7 @@ export default function ProductPreview() {
         >
           <span
             className="mb-4 block text-xs font-light uppercase tracking-[0.4em]"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            style={{ color: "rgba(193,163,106,0.6)" }}
           >
             Featured Products
           </span>
@@ -136,7 +136,7 @@ export default function ProductPreview() {
         >
           <Link
             href="/shop"
-            className="inline-block rounded-2xl border border-[rgba(212,175,55,0.25)] bg-[rgba(212,175,55,0.06)] px-10 py-4 text-sm font-medium tracking-wider text-[#D4AF37] transition-all duration-300 hover:bg-[rgba(212,175,55,0.12)] hover:shadow-[0_0_20px_rgba(212,175,55,0.2)]"
+            className="inline-block rounded-2xl border border-[rgba(193,163,106,0.25)] bg-[rgba(193,163,106,0.06)] px-10 py-4 text-sm font-medium tracking-wider text-[#C1A36A] transition-all duration-300 hover:bg-[rgba(193,163,106,0.12)] hover:shadow-[0_0_20px_rgba(193,163,106,0.2)]"
           >
             View All Products
           </Link>

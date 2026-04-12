@@ -27,7 +27,7 @@ export default function Footer() {
       className="relative border-t"
       style={{
         background: "#0D0D0D",
-        borderColor: "rgba(212,175,55,0.12)",
+        borderColor: "rgba(193,163,106,0.12)",
       }}
     >
       {/* Top glow */}
@@ -35,7 +35,7 @@ export default function Footer() {
         className="absolute top-0 left-1/2 h-px w-[600px] -translate-x-1/2"
         style={{
           background:
-            "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
+            "linear-gradient(to right, transparent, rgba(193,163,106,0.4), transparent)",
         }}
       />
 
@@ -47,15 +47,15 @@ export default function Footer() {
               <span
                 className="font-[family-name:var(--font-playfair)] text-2xl font-bold tracking-wider"
                 style={{
-                  color: "#D4AF37",
-                  textShadow: "0 0 20px rgba(212,175,55,0.4)",
+                  color: "#C1A36A",
+                  textShadow: "0 0 20px rgba(193,163,106,0.4)",
                 }}
               >
                 HERAN
               </span>
               <span
                 className="text-xs font-light uppercase tracking-[0.25em]"
-                style={{ color: "rgba(212,175,55,0.5)" }}
+                style={{ color: "rgba(193,163,106,0.5)" }}
               >
                 Mart
               </span>
@@ -72,7 +72,7 @@ export default function Footer() {
                 <button
                   key={label}
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(212,175,55,0.12)] bg-[rgba(255,255,255,0.04)] text-[rgba(245,245,245,0.5)] transition-all duration-200"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(193,163,106,0.12)] bg-[rgba(255,255,255,0.04)] text-[rgba(245,245,245,0.5)] transition-all duration-200"
                   style={{ '--social-color': color } as React.CSSProperties}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = `${color}20`;
@@ -81,7 +81,7 @@ export default function Footer() {
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.12)";
+                    e.currentTarget.style.borderColor = "rgba(193,163,106,0.12)";
                     e.currentTarget.style.color = "rgba(245,245,245,0.5)";
                   }}
                 >
@@ -95,7 +95,7 @@ export default function Footer() {
           <div>
             <h4
               className="mb-5 text-xs font-medium uppercase tracking-[0.3em]"
-              style={{ color: "rgba(212,175,55,0.6)" }}
+              style={{ color: "rgba(193,163,106,0.6)" }}
             >
               Navigate
             </h4>
@@ -104,7 +104,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-light text-[rgba(245,245,245,0.45)] transition-colors duration-200 hover:text-[#D4AF37]"
+                    className="text-sm font-light text-[rgba(245,245,245,0.45)] transition-colors duration-200 hover:text-[#C1A36A]"
                   >
                     {link.label}
                   </Link>
@@ -117,14 +117,14 @@ export default function Footer() {
           <div>
             <h4
               className="mb-5 text-xs font-medium uppercase tracking-[0.3em]"
-              style={{ color: "rgba(212,175,55,0.6)" }}
+              style={{ color: "rgba(193,163,106,0.6)" }}
             >
               Contact
             </h4>
             <ul className="space-y-3">
               {contactInfo.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-start gap-2">
-                  <Icon size={13} className="mt-0.5 shrink-0" style={{ color: "rgba(212,175,55,0.5)" }} />
+                  <Icon size={13} className="mt-0.5 shrink-0" style={{ color: "rgba(193,163,106,0.5)" }} />
                   <span className="text-sm font-light" style={{ color: "rgba(245,245,245,0.45)" }}>
                     {text}
                   </span>
@@ -136,7 +136,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div
-          className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-[rgba(212,175,55,0.08)] pt-6 sm:flex-row"
+          className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-[rgba(193,163,106,0.08)] pt-6 sm:flex-row"
         >
           <p className="text-xs font-light" style={{ color: "rgba(245,245,245,0.25)" }}>
             © {new Date().getFullYear()} HERAN Mart. All rights reserved.

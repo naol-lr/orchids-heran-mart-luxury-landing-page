@@ -47,7 +47,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0D0D0D] cursor-pointer select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#050505] cursor-pointer select-none"
       onClick={handleClick}
       initial={{ opacity: 1 }}
       animate={phase === 'done' ? { opacity: 0 } : { opacity: 1 }}
@@ -58,7 +58,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(193,163,106,0.06) 0%, transparent 70%)',
           }}
         />
       </div>
@@ -75,7 +75,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
             height: 20,
             marginLeft: -10,
             marginTop: -10,
-            border: '2px solid rgba(212,175,55,0.7)',
+            border: '2px solid rgba(193,163,106,0.7)',
             animation: 'ripple 1s ease-out forwards',
           }}
         />
@@ -96,10 +96,10 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
                   key={letter + i}
                   className="font-[family-name:var(--font-playfair)] font-bold text-[clamp(4rem,12vw,9rem)] leading-none select-none"
                   style={{
-                    color: '#D4AF37',
+                    color: '#C1A36A',
                     textShadow:
-                      '0 0 30px rgba(212,175,55,0.7), 0 0 60px rgba(212,175,55,0.3), 0 0 100px rgba(212,175,55,0.15)',
-                    filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.5))',
+                      '0 0 20px rgba(193,163,106,0.3)',
+                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
                   }}
                   initial={{ opacity: 0, y: 40, scale: 0.6 }}
                   animate={{
@@ -138,7 +138,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
                 style={{
                   color: '#F5F5F5',
                   textShadow:
-                    '0 0 40px rgba(212,175,55,0.4), 0 0 80px rgba(212,175,55,0.15)',
+                    '0 0 40px rgba(193,163,106,0.4), 0 0 80px rgba(193,163,106,0.15)',
                 }}
               >
                 Welcome
@@ -154,7 +154,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
           <motion.p
             key="hint"
             className="absolute bottom-12 left-1/2 -translate-x-1/2 text-sm tracking-[0.3em] uppercase"
-            style={{ color: 'rgba(212,175,55,0.5)' }}
+            style={{ color: 'rgba(193,163,106,0.5)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 0.7, 0.4, 0.7] }}
             exit={{ opacity: 0 }}
@@ -175,7 +175,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
               style={{
                 width: Math.random() * 4 + 2,
                 height: Math.random() * 4 + 2,
-                background: 'rgba(212,175,55,0.4)',
+                background: 'rgba(193,163,106,0.4)',
                 left: `${10 + i * 8}%`,
                 top: `${20 + (i % 4) * 20}%`,
               }}

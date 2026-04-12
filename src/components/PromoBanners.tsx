@@ -2,35 +2,35 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Tag, Zap, Package } from "lucide-react";
+import { Tag, Zap, Package, Diamond, Sprout, ShoppingBag } from "lucide-react";
 
 const promos = [
   {
     icon: Zap,
-    tag: "Limited Time",
-    headline: "20% OFF",
-    subtitle: "All Snacks & Confectionery",
-    cta: "Shop Snacks",
-    accentColor: "#D4AF37",
-    emoji: "🍿",
+    bgIcon: Diamond,
+    tag: "Limited Offering",
+    headline: "20% Curated",
+    subtitle: "Select artisanal snacks and confectionery items",
+    cta: "Explore Selection",
+    accentColor: "#C1A36A",
   },
   {
     icon: Tag,
-    tag: "Weekend Sale",
-    headline: "Fresh Produce",
-    subtitle: "Farm-fresh fruits & vegetables every weekend",
-    cta: "See Produce",
-    accentColor: "#4ade80",
-    emoji: "🥦",
+    bgIcon: Sprout,
+    tag: "Weekend Harvest",
+    headline: "Farm Fresh",
+    subtitle: "Organic, farm-fresh produce sourced every weekend",
+    cta: "View Produce",
+    accentColor: "#A8BCA1", // Muted sage green
   },
   {
     icon: Package,
-    tag: "Best Value",
-    headline: "Family Bundle",
-    subtitle: "Household essentials at one unbeatable price",
-    cta: "Get Bundle",
-    accentColor: "#D4AF37",
-    emoji: "🧺",
+    bgIcon: ShoppingBag,
+    tag: "Exceptional Value",
+    headline: "The Essentials",
+    subtitle: "Premium household necessities bundled exclusively",
+    cta: "Discover More",
+    accentColor: "#E6D2A8", // Champagne silver
   },
 ];
 
@@ -42,14 +42,14 @@ export default function PromoBanners() {
     <section
       ref={ref}
       className="relative py-24 md:py-32 px-6"
-      style={{ background: "#0D0D0D" }}
+      style={{ background: "#0A0A0A" }}
     >
       {/* Divider glow */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16"
         style={{
           background:
-            "linear-gradient(to bottom, transparent, rgba(212,175,55,0.4), transparent)",
+            "linear-gradient(to bottom, transparent, rgba(193, 163, 106, 0.3), transparent)",
         }}
       />
 
@@ -58,20 +58,20 @@ export default function PromoBanners() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
           <span
-            className="text-xs tracking-[0.4em] uppercase font-light mb-4 block"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            className="text-[10px] sm:text-xs tracking-[0.5em] uppercase font-light mb-4 block"
+            style={{ color: "rgba(193, 163, 106, 0.6)" }}
           >
-            Exclusive Deals
+            Exclusive Privileges
           </span>
           <h2
-            className="font-[family-name:var(--font-playfair)] font-bold"
-            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "#F5F5F5" }}
+            className="font-[family-name:var(--font-playfair)] font-medium"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "#F0F0F0" }}
           >
-            Today&apos;s Offers
+            Today's Curator Picks
           </h2>
         </motion.div>
 
@@ -79,40 +79,41 @@ export default function PromoBanners() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {promos.map((promo, i) => {
             const Icon = promo.icon;
+            const BgIcon = promo.bgIcon;
             return (
               <motion.div
                 key={promo.headline}
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: i * 0.15, duration: 0.7 }}
-                className="group relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-300"
+                transition={{ delay: i * 0.15, duration: 0.8 }}
+                className="group relative rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-500"
                 style={{
-                  background: `linear-gradient(135deg, ${promo.accentColor}14 0%, ${promo.accentColor}08 100%)`,
-                  border: `1px solid ${promo.accentColor}40`,
+                  background: `linear-gradient(135deg, ${promo.accentColor}0A 0%, ${promo.accentColor}03 100%)`,
+                  border: `1px solid ${promo.accentColor}20`,
                   backdropFilter: "blur(20px)",
                 }}
               >
-                {/* Big emoji watermark */}
+                {/* Huge subtle icon in background */}
                 <div
-                  className="absolute top-4 right-4 text-7xl select-none pointer-events-none opacity-10"
+                  className="absolute -top-8 -right-8 text-7xl select-none pointer-events-none opacity-[0.03] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-12"
                 >
-                  {promo.emoji}
+                  <BgIcon size={200} color={promo.accentColor} />
                 </div>
 
-                <div className="relative p-8">
+                <div className="relative p-10 h-full flex flex-col">
                   {/* Tag */}
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-3 mb-6">
                     <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center"
+                      className="w-8 h-8 rounded-full flex items-center justify-center opacity-80"
                       style={{
-                        background: `${promo.accentColor}20`,
-                        border: `1px solid ${promo.accentColor}40`,
+                        background: `${promo.accentColor}1A`,
+                        border: `1px solid ${promo.accentColor}30`,
                       }}
                     >
                       <Icon size={14} style={{ color: promo.accentColor }} />
                     </div>
                     <span
-                      className="text-xs tracking-[0.25em] uppercase font-medium"
+                      className="text-[10px] tracking-[0.3em] uppercase font-medium"
                       style={{ color: promo.accentColor }}
                     >
                       {promo.tag}
@@ -121,11 +122,11 @@ export default function PromoBanners() {
 
                   {/* Headline */}
                   <h3
-                    className="font-[family-name:var(--font-playfair)] font-bold mb-2 leading-tight"
+                    className="font-[family-name:var(--font-playfair)] font-medium mb-3 leading-tight"
                     style={{
-                      fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
-                      color: promo.accentColor,
-                      textShadow: `0 0 30px ${promo.accentColor}60`,
+                      fontSize: "clamp(1.8rem, 3vw, 2.2rem)",
+                      color: "#F0F0F0",
+                      letterSpacing: "-0.01em",
                     }}
                   >
                     {promo.headline}
@@ -133,31 +134,36 @@ export default function PromoBanners() {
 
                   {/* Subtitle */}
                   <p
-                    className="text-sm font-light leading-relaxed mb-6"
-                    style={{ color: "rgba(245,245,245,0.5)" }}
+                    className="text-sm font-light leading-relaxed mb-10 flex-grow"
+                    style={{ color: "rgba(240, 240, 240, 0.5)" }}
                   >
                     {promo.subtitle}
                   </p>
 
                   {/* CTA */}
                   <button
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium tracking-wider uppercase transition-all duration-300"
+                    className="flex items-center gap-2 text-xs font-light tracking-[0.2em] uppercase transition-all duration-300 w-max pb-1 border-b"
                     style={{
-                      background: `${promo.accentColor}15`,
                       color: promo.accentColor,
-                      border: `1px solid ${promo.accentColor}30`,
+                      borderColor: `${promo.accentColor}40`,
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = promo.accentColor;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = `${promo.accentColor}40`;
                     }}
                   >
                     {promo.cta}
-                    <span className="text-lg leading-none">{promo.emoji}</span>
                   </button>
                 </div>
 
-                {/* Bottom shimmer line */}
+                {/* Bottom subtle gradient glow on hover */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[80%] h-[40%] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none filter blur-3xl rounded-full"
                   style={{
-                    background: `linear-gradient(to right, transparent, ${promo.accentColor}80, transparent)`,
+                    background: promo.accentColor,
+                    opacity: 0.05,
                   }}
                 />
               </motion.div>
@@ -169,46 +175,52 @@ export default function PromoBanners() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.5, duration: 0.7 }}
-          className="mt-6 rounded-3xl overflow-hidden cursor-pointer group relative"
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="mt-10 rounded-[2.5rem] overflow-hidden cursor-pointer group relative"
           style={{
             background:
-              "linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(27,48,34,0.25) 50%, rgba(212,175,55,0.06) 100%)",
-            border: "1px solid rgba(212,175,55,0.2)",
+              "linear-gradient(135deg, rgba(193, 163, 106, 0.05) 0%, rgba(20, 26, 22, 0.4) 50%, rgba(193, 163, 106, 0.05) 100%)",
+            border: "1px solid rgba(193, 163, 106, 0.15)",
             backdropFilter: "blur(20px)",
-            transition: "all 0.4s ease",
+            transition: "all 0.5s ease",
           }}
         >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8 md:p-10">
-            <div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-10 md:p-14">
+            <div className="max-w-xl">
               <span
-                className="text-xs tracking-[0.35em] uppercase font-light mb-2 block"
-                style={{ color: "rgba(212,175,55,0.6)" }}
+                className="text-[10px] tracking-[0.4em] uppercase font-light mb-3 block"
+                style={{ color: "rgba(193, 163, 106, 0.6)" }}
               >
-                Member Exclusive
+                The Heran Society
               </span>
               <h3
-                className="font-[family-name:var(--font-playfair)] font-bold text-2xl md:text-3xl"
-                style={{ color: "#F5F5F5" }}
+                className="font-[family-name:var(--font-playfair)] font-medium text-3xl md:text-4xl leading-tight text-[#F0F0F0]"
               >
-                Join HERAN Rewards &amp; Save Every Visit
+                Join Heran Rewards &amp; Elevate Every Visit
               </h3>
               <p
-                className="text-sm font-light mt-2"
-                style={{ color: "rgba(245,245,245,0.45)" }}
+                className="text-sm font-light mt-4 leading-relaxed"
+                style={{ color: "rgba(240, 240, 240, 0.5)" }}
               >
-                Earn points on every purchase, unlock weekly member discounts &amp; more.
+                Earn privileges on every purchase, unlock exclusive member pricing &amp; priority access.
               </p>
             </div>
+            
             <button
-              className="whitespace-nowrap px-8 py-4 rounded-2xl text-sm font-medium tracking-wider uppercase transition-all duration-300 hover:shadow-xl"
+              className="whitespace-nowrap px-10 py-4 rounded-full text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 w-full md:w-auto"
               style={{
-                background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",
-                color: "#0D0D0D",
-                boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
+                background: "linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)",
+                color: "#0A0A0A",
+                boxShadow: "0 8px 30px rgba(193, 163, 106, 0.15)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 40px rgba(193, 163, 106, 0.25)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 30px rgba(193, 163, 106, 0.15)";
               }}
             >
-              Join Free
+              Become a Member
             </button>
           </div>
         </motion.div>

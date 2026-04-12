@@ -43,7 +43,7 @@ export const products: Product[] = [
     price: "$14.99",
     emoji: "☕",
     badge: "Premium",
-    bg: "rgba(212,175,55,0.06)",
+    bg: "rgba(193,163,106,0.06)",
     description: "Experience the birthplace of coffee with our single-origin Ethiopian beans. Featuring a bright, citrusy acidity and a complex floral aroma, this medium roast is perfect for pour-over or drip brewing.",
     details: [
       "12oz (340g) of whole coffee beans",
@@ -83,7 +83,7 @@ export const products: Product[] = [
     price: "$5.99",
     emoji: "🥞",
     badge: "Fresh",
-    bg: "rgba(212,175,55,0.06)",
+    bg: "rgba(193,163,106,0.06)",
     description: "Freshly made daily, our injera is the perfect sourdough flatbread to accompany your Ethiopian dishes. Its unique, spongy texture is ideal for scooping up flavorful stews and salads.",
     details: [
         "Pack of 3 large injera rounds",
@@ -103,7 +103,7 @@ export const products: Product[] = [
     price: "$6.99",
     emoji: "🍎",
     badge: "Daily Fresh",
-    bg: "rgba(212,175,55,0.06)",
+    bg: "rgba(193,163,106,0.06)",
     description: "A delightful mix of the freshest seasonal fruits, chopped and ready to eat. Perfect for a healthy breakfast, a light snack, or a vibrant addition to your desserts.",
     details: [
       "16oz (454g) container",
@@ -123,7 +123,7 @@ export const products: Product[] = [
     price: "$3.49",
     emoji: "🍿",
     badge: "Popular",
-    bg: "rgba(212,175,55,0.06)",
+    bg: "rgba(193,163,106,0.06)",
     description: "A curated selection of premium, hard-to-find snacks. From artisanal popcorn to gourmet chips, treat yourself to something special. This is our most popular grab-and-go item.",
     details: [
       "Single-serving bag (size varies)",

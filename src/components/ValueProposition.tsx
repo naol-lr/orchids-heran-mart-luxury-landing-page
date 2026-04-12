@@ -10,16 +10,16 @@ const values = [
     title: "Polite Service",
     description:
       "We treat every customer with respect and friendliness — because you deserve more than just a transaction.",
-    accent: "#D4AF37",
-    bg: "rgba(212,175,55,0.05)",
-    glow: "rgba(212,175,55,0.2)",
+    accent: "#C1A36A",
+    bg: "rgba(193,163,106,0.05)",
+    glow: "rgba(193,163,106,0.2)",
   },
   {
     icon: Star,
     title: "Quality Products",
     description:
       "Fresh groceries and trusted brands every day — carefully selected so you never have to compromise.",
-    accent: "#D4AF37",
+    accent: "#C1A36A",
     bg: "rgba(27,48,34,0.15)",
     glow: "rgba(27,48,34,0.4)",
   },
@@ -28,9 +28,9 @@ const values = [
     title: "Community Store",
     description:
       "A neighborhood mart built for convenience and reliability — rooted in the Las Vegas community.",
-    accent: "#D4AF37",
-    bg: "rgba(212,175,55,0.05)",
-    glow: "rgba(212,175,55,0.2)",
+    accent: "#C1A36A",
+    bg: "rgba(193,163,106,0.05)",
+    glow: "rgba(193,163,106,0.2)",
   },
 ];
 
@@ -49,7 +49,7 @@ export default function ValueProposition() {
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16"
         style={{
-          background: "linear-gradient(to bottom, transparent, rgba(212,175,55,0.4), transparent)",
+          background: "linear-gradient(to bottom, transparent, rgba(193,163,106,0.4), transparent)",
         }}
       />
 
@@ -63,7 +63,7 @@ export default function ValueProposition() {
         >
           <span
             className="text-xs tracking-[0.4em] uppercase font-light mb-4 block"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            style={{ color: "rgba(193,163,106,0.6)" }}
           >
             Why Choose HERAN
           </span>
@@ -88,20 +88,20 @@ export default function ValueProposition() {
                 className="group relative rounded-2xl p-8 cursor-default transition-all duration-500"
                 style={{
                   background: "rgba(26,26,26,0.6)",
-                  border: "1px solid rgba(212,175,55,0.12)",
+                  border: "1px solid rgba(193,163,106,0.12)",
                   backdropFilter: "blur(20px)",
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.borderColor =
-                    "rgba(212,175,55,0.4)";
+                    "rgba(193,163,106,0.4)";
                   (e.currentTarget as HTMLElement).style.boxShadow =
-                    "0 0 30px rgba(212,175,55,0.12), 0 0 60px rgba(212,175,55,0.05)";
+                    "0 0 30px rgba(193,163,106,0.12), 0 0 60px rgba(193,163,106,0.05)";
                   (e.currentTarget as HTMLElement).style.transform =
                     "translateY(-4px)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.borderColor =
-                    "rgba(212,175,55,0.12)";
+                    "rgba(193,163,106,0.12)";
                   (e.currentTarget as HTMLElement).style.boxShadow = "none";
                   (e.currentTarget as HTMLElement).style.transform =
                     "translateY(0)";
@@ -112,7 +112,7 @@ export default function ValueProposition() {
                   className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110"
                   style={{
                     background: v.bg,
-                    border: "1px solid rgba(212,175,55,0.2)",
+                    border: "1px solid rgba(193,163,106,0.2)",
                   }}
                 >
                   <Icon size={24} style={{ color: v.accent }} />
@@ -139,7 +139,7 @@ export default function ValueProposition() {
                   className="absolute bottom-0 left-6 right-6 h-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   style={{
                     background:
-                      "linear-gradient(to right, transparent, rgba(212,175,55,0.5), transparent)",
+                      "linear-gradient(to right, transparent, rgba(193,163,106,0.5), transparent)",
                   }}
                 />
               </motion.div>

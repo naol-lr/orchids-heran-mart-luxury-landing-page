@@ -51,7 +51,7 @@ function ReviewCarousel() {
       >
         <span
           className="mb-3 block text-xs font-light uppercase tracking-[0.4em]"
-          style={{ color: "rgba(212,175,55,0.6)" }}
+          style={{ color: "rgba(193,163,106,0.6)" }}
         >
           Customer Reviews
         </span>
@@ -79,16 +79,16 @@ function ReviewCarousel() {
             className="rounded-3xl p-10 text-center"
             style={{
               background: "rgba(26,26,26,0.7)",
-              border: "1px solid rgba(212,175,55,0.18)",
+              border: "1px solid rgba(193,163,106,0.18)",
               backdropFilter: "blur(20px)",
-              boxShadow: "0 0 40px rgba(212,175,55,0.05), 0 8px 32px rgba(0,0,0,0.4)",
+              boxShadow: "0 0 40px rgba(193,163,106,0.05), 0 8px 32px rgba(0,0,0,0.4)",
             }}
           >
-            <Quote size={36} className="mx-auto mb-6" style={{ color: "rgba(212,175,55,0.3)" }} />
+            <Quote size={36} className="mx-auto mb-6" style={{ color: "rgba(193,163,106,0.3)" }} />
 
             <div className="mb-6 flex justify-center gap-1">
               {[...Array(reviews[active].rating)].map((_, i) => (
-                <Star key={i} size={16} fill="#D4AF37" style={{ color: "#D4AF37" }} />
+                <Star key={i} size={16} fill="#C1A36A" style={{ color: "#C1A36A" }} />
               ))}
             </div>
 
@@ -99,7 +99,7 @@ function ReviewCarousel() {
               &ldquo;{reviews[active].quote}&rdquo;
             </p>
 
-            <p className="text-sm font-semibold" style={{ color: "#D4AF37" }}>
+            <p className="text-sm font-semibold" style={{ color: "#C1A36A" }}>
               {reviews[active].name}
             </p>
             <p className="mt-1 text-xs font-light" style={{ color: "rgba(245,245,245,0.35)" }}>
@@ -113,16 +113,16 @@ function ReviewCarousel() {
             onClick={prev}
             className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
             style={{
-              background: "rgba(212,175,55,0.08)",
-              border: "1px solid rgba(212,175,55,0.2)",
-              color: "#D4AF37",
+              background: "rgba(193,163,106,0.08)",
+              border: "1px solid rgba(193,163,106,0.2)",
+              color: "#C1A36A",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.15)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 0 15px rgba(212,175,55,0.2)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(193,163,106,0.15)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "0 0 15px rgba(193,163,106,0.2)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.08)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(193,163,106,0.08)";
               (e.currentTarget as HTMLElement).style.boxShadow = "none";
             }}
           >
@@ -138,8 +138,8 @@ function ReviewCarousel() {
                 style={{
                   width: i === active ? 20 : 8,
                   height: 8,
-                  background: i === active ? "#D4AF37" : "rgba(212,175,55,0.2)",
-                  boxShadow: i === active ? "0 0 10px rgba(212,175,55,0.5)" : "none",
+                  background: i === active ? "#C1A36A" : "rgba(193,163,106,0.2)",
+                  boxShadow: i === active ? "0 0 10px rgba(193,163,106,0.5)" : "none",
                 }}
               />
             ))}
@@ -149,16 +149,16 @@ function ReviewCarousel() {
             onClick={next}
             className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
             style={{
-              background: "rgba(212,175,55,0.08)",
-              border: "1px solid rgba(212,175,55,0.2)",
-              color: "#D4AF37",
+              background: "rgba(193,163,106,0.08)",
+              border: "1px solid rgba(193,163,106,0.2)",
+              color: "#C1A36A",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.15)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 0 15px rgba(212,175,55,0.2)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(193,163,106,0.15)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "0 0 15px rgba(193,163,106,0.2)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.08)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(193,163,106,0.08)";
               (e.currentTarget as HTMLElement).style.boxShadow = "none";
             }}
           >
@@ -190,14 +190,14 @@ function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
       className="grid grid-cols-1 items-center gap-8 rounded-3xl p-8 md:grid-cols-2 md:p-12"
       style={{
         background: "rgba(26,26,26,0.6)",
-        border: "1px solid rgba(212,175,55,0.12)",
+        border: "1px solid rgba(193,163,106,0.12)",
         backdropFilter: "blur(20px)",
       }}
     >
       <div className={isEven ? "order-1" : "order-1 md:order-2"}>
         <span
           className="mb-3 block text-xs font-light uppercase tracking-[0.3em]"
-          style={{ color: "rgba(212,175,55,0.6)" }}
+          style={{ color: "rgba(193,163,106,0.6)" }}
         >
           {s.label}
         </span>
@@ -218,11 +218,11 @@ function StoryCard({ s, isEven }: { s: StoryItem; isEven: boolean }) {
       <div
         className={`flex h-40 items-center justify-center rounded-2xl ${isEven ? "order-2" : "order-2 md:order-1"}`}
         style={{
-          background: "rgba(212,175,55,0.04)",
-          border: "1px solid rgba(212,175,55,0.1)",
+          background: "rgba(193,163,106,0.04)",
+          border: "1px solid rgba(193,163,106,0.1)",
         }}
       >
-        <span className="text-6xl md:text-8xl">{s.emoji}</span>
+        <span className="text-6xl md:text-8xl font-[family-name:var(--font-playfair)] italic font-light text-[#C1A36A] opacity-50">{s.title.charAt(0)}</span>
       </div>
     </motion.div>
   );
@@ -264,7 +264,7 @@ export default function AboutPage() {
       >
         <div
           className="pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(193,163,106,0.04) 0%, transparent 70%)" }}
         />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -274,7 +274,7 @@ export default function AboutPage() {
         >
           <span
             className="mb-4 block text-xs font-light uppercase tracking-[0.4em]"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            style={{ color: "rgba(193,163,106,0.6)" }}
           >
             Our Identity
           </span>
@@ -283,7 +283,7 @@ export default function AboutPage() {
             style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", color: "#F5F5F5" }}
           >
             About{" "}
-            <span style={{ color: "#D4AF37", textShadow: "0 0 40px rgba(212,175,55,0.4)" }}>
+            <span style={{ color: "#C1A36A", textShadow: "0 0 40px rgba(193,163,106,0.4)" }}>
               HERAN Mart
             </span>
           </h1>
@@ -308,7 +308,7 @@ export default function AboutPage() {
         <div
           className="my-4 h-px"
           style={{
-            background: "linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent)",
+            background: "linear-gradient(to right, transparent, rgba(193,163,106,0.4), transparent)",
           }}
         />
 
@@ -324,8 +324,8 @@ export default function AboutPage() {
           className="mt-8 rounded-3xl p-10 text-center"
           style={{
             background:
-              "linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(27,48,34,0.3) 50%, rgba(212,175,55,0.06) 100%)",
-            border: "1px solid rgba(212,175,55,0.2)",
+              "linear-gradient(135deg, rgba(193,163,106,0.06) 0%, rgba(27,48,34,0.3) 50%, rgba(193,163,106,0.06) 100%)",
+            border: "1px solid rgba(193,163,106,0.2)",
           }}
         >
           <h3
@@ -345,24 +345,24 @@ export default function AboutPage() {
               href="/contact"
               className="rounded-2xl px-8 py-4 text-sm font-medium uppercase tracking-wider transition-all duration-300"
               style={{
-                background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",
+                background: "linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)",
                 color: "#0D0D0D",
-                boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
+                boxShadow: "0 4px 20px rgba(193,163,106,0.3)",
               }}
               onMouseEnter={(e) =>
                 ((e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 4px 30px rgba(212,175,55,0.5)")
+                  "0 4px 30px rgba(193,163,106,0.5)")
               }
               onMouseLeave={(e) =>
                 ((e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 4px 20px rgba(212,175,55,0.3)")
+                  "0 4px 20px rgba(193,163,106,0.3)")
               }
             >
               Get Directions
             </Link>
             <Link
               href="/shop"
-              className="rounded-2xl border border-[rgba(212,175,55,0.2)] bg-[rgba(255,255,255,0.04)] px-8 py-4 text-sm font-medium uppercase tracking-wider text-[rgba(245,245,245,0.8)] transition-all duration-300"
+              className="rounded-2xl border border-[rgba(193,163,106,0.2)] bg-[rgba(255,255,255,0.04)] px-8 py-4 text-sm font-medium uppercase tracking-wider text-[rgba(245,245,245,0.8)] transition-all duration-300"
             >
               Browse Products
             </Link>

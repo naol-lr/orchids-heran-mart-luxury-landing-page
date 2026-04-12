@@ -74,7 +74,7 @@ export default function ContactPage() {
         >
           <span
             className="text-xs tracking-[0.4em] uppercase font-light mb-4 block"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            style={{ color: "rgba(193,163,106,0.6)" }}
           >
             Reach Us
           </span>
@@ -107,7 +107,7 @@ export default function ContactPage() {
               background: "rgba(26,26,26,0.7)",
               border: isOpen
                 ? "1px solid rgba(74,222,128,0.3)"
-                : "1px solid rgba(212,175,55,0.15)",
+                : "1px solid rgba(193,163,106,0.15)",
               boxShadow: isOpen
                 ? "0 0 40px rgba(74,222,128,0.08), 0 8px 32px rgba(0,0,0,0.4)"
                 : "0 8px 32px rgba(0,0,0,0.4)",
@@ -153,9 +153,9 @@ export default function ContactPage() {
             <div className="flex gap-3 mb-6">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-                style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.2)" }}
+                style={{ background: "rgba(193,163,106,0.1)", border: "1px solid rgba(193,163,106,0.2)" }}
               >
-                <MapPin size={16} style={{ color: "#D4AF37" }} />
+                <MapPin size={16} style={{ color: "#C1A36A" }} />
               </div>
               <div>
                 <p className="text-sm font-medium mb-0.5" style={{ color: "#F5F5F5" }}>
@@ -171,9 +171,9 @@ export default function ContactPage() {
             <div className="flex gap-3 mb-6">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.2)" }}
+                style={{ background: "rgba(193,163,106,0.1)", border: "1px solid rgba(193,163,106,0.2)" }}
               >
-                <Phone size={16} style={{ color: "#D4AF37" }} />
+                <Phone size={16} style={{ color: "#C1A36A" }} />
               </div>
               <div>
                 <p className="text-sm font-medium mb-0.5" style={{ color: "#F5F5F5" }}>Phone</p>
@@ -181,7 +181,7 @@ export default function ContactPage() {
                   href="tel:+17024789397"
                   className="text-sm font-light transition-colors duration-200"
                   style={{ color: "rgba(245,245,245,0.5)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#D4AF37")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#C1A36A")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(245,245,245,0.5)")}
                 >
                   +1 (702) 478-9397
@@ -193,9 +193,9 @@ export default function ContactPage() {
             <div className="flex gap-3 mb-8">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.2)" }}
+                style={{ background: "rgba(193,163,106,0.1)", border: "1px solid rgba(193,163,106,0.2)" }}
               >
-                <Mail size={16} style={{ color: "#D4AF37" }} />
+                <Mail size={16} style={{ color: "#C1A36A" }} />
               </div>
               <div>
                 <p className="text-sm font-medium mb-0.5" style={{ color: "#F5F5F5" }}>Email</p>
@@ -203,7 +203,7 @@ export default function ContactPage() {
                   href="mailto:hello@heranmart.com"
                   className="text-sm font-light transition-colors duration-200"
                   style={{ color: "rgba(245,245,245,0.5)" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#D4AF37")}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#C1A36A")}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(245,245,245,0.5)")}
                 >
                   hello@heranmart.com
@@ -214,10 +214,10 @@ export default function ContactPage() {
             {/* Hours */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Clock size={14} style={{ color: "rgba(212,175,55,0.6)" }} />
+                <Clock size={14} style={{ color: "rgba(193,163,106,0.6)" }} />
                 <span
                   className="text-xs tracking-[0.25em] uppercase font-light"
-                  style={{ color: "rgba(212,175,55,0.6)" }}
+                  style={{ color: "rgba(193,163,106,0.6)" }}
                 >
                   Opening Hours
                 </span>
@@ -225,7 +225,7 @@ export default function ContactPage() {
               <div className="space-y-2">
                 {hours.map((h) => (
                   <div key={h.day} className="flex justify-between items-center py-2"
-                    style={{ borderBottom: "1px solid rgba(212,175,55,0.08)" }}>
+                    style={{ borderBottom: "1px solid rgba(193,163,106,0.08)" }}>
                     <span className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>{h.day}</span>
                     <span className="text-sm font-medium" style={{ color: "#F5F5F5" }}>{h.time}</span>
                   </div>
@@ -241,7 +241,7 @@ export default function ContactPage() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="rounded-3xl overflow-hidden relative"
             style={{
-              border: "1px solid rgba(212,175,55,0.15)",
+              border: "1px solid rgba(193,163,106,0.15)",
               minHeight: 400,
               background: "rgba(26,26,26,0.7)",
             }}
@@ -262,7 +262,7 @@ export default function ContactPage() {
             {/* Gold overlay frame */}
             <div
               className="absolute inset-0 pointer-events-none rounded-3xl"
-              style={{ border: "1px solid rgba(212,175,55,0.15)" }}
+              style={{ border: "1px solid rgba(193,163,106,0.15)" }}
             />
           </motion.div>
         </div>
@@ -278,7 +278,7 @@ export default function ContactPage() {
             className="rounded-3xl p-8"
             style={{
               background: "rgba(26,26,26,0.7)",
-              border: "1px solid rgba(212,175,55,0.15)",
+              border: "1px solid rgba(193,163,106,0.15)",
               backdropFilter: "blur(20px)",
             }}
           >
@@ -309,7 +309,7 @@ export default function ContactPage() {
                     <label
                       htmlFor={field.id}
                       className="block text-xs tracking-[0.2em] uppercase mb-2 font-light"
-                      style={{ color: "rgba(212,175,55,0.6)" }}
+                      style={{ color: "rgba(193,163,106,0.6)" }}
                     >
                       {field.label}
                     </label>
@@ -323,15 +323,15 @@ export default function ContactPage() {
                       className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
                       style={{
                         background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(212,175,55,0.15)",
+                        border: "1px solid rgba(193,163,106,0.15)",
                         color: "#F5F5F5",
                       }}
                       onFocus={(e) => {
-                        (e.target as HTMLElement).style.borderColor = "rgba(212,175,55,0.5)";
-                        (e.target as HTMLElement).style.boxShadow = "0 0 15px rgba(212,175,55,0.1)";
+                        (e.target as HTMLElement).style.borderColor = "rgba(193,163,106,0.5)";
+                        (e.target as HTMLElement).style.boxShadow = "0 0 15px rgba(193,163,106,0.1)";
                       }}
                       onBlur={(e) => {
-                        (e.target as HTMLElement).style.borderColor = "rgba(212,175,55,0.15)";
+                        (e.target as HTMLElement).style.borderColor = "rgba(193,163,106,0.15)";
                         (e.target as HTMLElement).style.boxShadow = "none";
                       }}
                     />
@@ -342,7 +342,7 @@ export default function ContactPage() {
                   <label
                     htmlFor="message"
                     className="block text-xs tracking-[0.2em] uppercase mb-2 font-light"
-                    style={{ color: "rgba(212,175,55,0.6)" }}
+                    style={{ color: "rgba(193,163,106,0.6)" }}
                   >
                     Message
                   </label>
@@ -356,15 +356,15 @@ export default function ContactPage() {
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-all duration-200"
                     style={{
                       background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(212,175,55,0.15)",
+                      border: "1px solid rgba(193,163,106,0.15)",
                       color: "#F5F5F5",
                     }}
                     onFocus={(e) => {
-                      (e.target as HTMLElement).style.borderColor = "rgba(212,175,55,0.5)";
-                      (e.target as HTMLElement).style.boxShadow = "0 0 15px rgba(212,175,55,0.1)";
+                      (e.target as HTMLElement).style.borderColor = "rgba(193,163,106,0.5)";
+                      (e.target as HTMLElement).style.boxShadow = "0 0 15px rgba(193,163,106,0.1)";
                     }}
                     onBlur={(e) => {
-                      (e.target as HTMLElement).style.borderColor = "rgba(212,175,55,0.15)";
+                      (e.target as HTMLElement).style.borderColor = "rgba(193,163,106,0.15)";
                       (e.target as HTMLElement).style.boxShadow = "none";
                     }}
                   />
@@ -376,9 +376,9 @@ export default function ContactPage() {
                   whileTap={{ scale: 0.98 }}
                   className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-medium tracking-wider uppercase transition-all duration-300"
                   style={{
-                    background: "linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)",
+                    background: "linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)",
                     color: "#0D0D0D",
-                    boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
+                    boxShadow: "0 4px 20px rgba(193,163,106,0.3)",
                   }}
                 >
                   <Send size={15} />
@@ -396,7 +396,7 @@ export default function ContactPage() {
             className="rounded-3xl p-8 flex flex-col justify-between"
             style={{
               background: "rgba(26,26,26,0.7)",
-              border: "1px solid rgba(212,175,55,0.15)",
+              border: "1px solid rgba(193,163,106,0.15)",
               backdropFilter: "blur(20px)",
             }}
           >
@@ -426,14 +426,14 @@ export default function ContactPage() {
                       className="flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group"
                       style={{
                         background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(212,175,55,0.1)",
+                        border: "1px solid rgba(193,163,106,0.1)",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,175,55,0.3)";
-                        (e.currentTarget as HTMLElement).style.background = "rgba(212,175,55,0.05)";
+                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(193,163,106,0.3)";
+                        (e.currentTarget as HTMLElement).style.background = "rgba(193,163,106,0.05)";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(212,175,55,0.1)";
+                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(193,163,106,0.1)";
                         (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)";
                       }}
                     >
@@ -456,7 +456,7 @@ export default function ContactPage() {
             {/* Gold divider */}
             <div
               className="my-8 h-px"
-              style={{ background: "linear-gradient(to right, transparent, rgba(212,175,55,0.3), transparent)" }}
+              style={{ background: "linear-gradient(to right, transparent, rgba(193,163,106,0.3), transparent)" }}
             />
 
             <div

@@ -58,7 +58,7 @@ export default function ShopPage() {
         >
           <span
             className="block text-xs font-light uppercase tracking-[0.4em]"
-            style={{ color: 'rgba(212,175,55,0.6)' }}
+            style={{ color: 'rgba(193,163,106,0.6)' }}
           >
             Our Collection
           </span>
@@ -73,7 +73,7 @@ export default function ShopPage() {
 
       {/* Filters & Search */}
       <div className="mx-auto mb-12 max-w-6xl px-6">
-        <div className="grid grid-cols-1 gap-6 rounded-2xl border border-[rgba(212,175,55,0.15)] bg-[rgba(26,26,26,0.7)] p-6 backdrop-blur-sm md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.7)] p-6 backdrop-blur-sm md:grid-cols-3">
           {/* Search Input */}
           <div className="relative md:col-span-1">
             <Search
@@ -85,7 +85,7 @@ export default function ShopPage() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-full w-full rounded-lg border border-[rgba(212,175,55,0.2)] bg-transparent py-3 pl-11 pr-4 text-sm text-white outline-none focus:ring-1 focus:ring-[rgba(212,175,55,0.5)]"
+              className="h-full w-full rounded-lg border border-[rgba(193,163,106,0.2)] bg-transparent py-3 pl-11 pr-4 text-sm text-white outline-none focus:ring-1 focus:ring-[rgba(193,163,106,0.5)]"
             />
             {searchTerm && (
               <button onClick={() => setSearchTerm('')} className="absolute top-1/2 right-4 -translate-y-1/2">
@@ -103,7 +103,7 @@ export default function ShopPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activeCategory === cat ? 'bg-[rgba(212,175,55,0.25)] text-[#D4AF37]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
+                  className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activeCategory === cat ? 'bg-[rgba(193,163,106,0.25)] text-[#C1A36A]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
                   {cat}
                 </button>
               ))}
@@ -116,7 +116,7 @@ export default function ShopPage() {
                 <button
                   key={range.label}
                   onClick={() => setActivePriceRange(range)}
-                  className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activePriceRange.label === range.label ? 'bg-[rgba(212,175,55,0.25)] text-[#D4AF37]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
+                  className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activePriceRange.label === range.label ? 'bg-[rgba(193,163,106,0.25)] text-[#C1A36A]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
                   {range.label}
                 </button>
               ))}

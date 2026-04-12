@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   const [introComplete, setIntroComplete] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // Check if the intro has been seen in this session
@@ -20,6 +21,7 @@ export default function Home() {
     if (introSeen) {
       setIntroComplete(true);
     }
+    setIsInitialized(true);
   }, []);
 
   useEffect(() => {
@@ -53,14 +55,14 @@ export default function Home() {
     <>
       {/* Hero intro animation — shown until clicked */}
       <AnimatePresence>
-        {!introComplete && (
+        {isInitialized && !introComplete && (
           <HeroIntro onComplete={() => setIntroComplete(true)} />
         )}
       </AnimatePresence>
 
       {/* Main site content */}
       <AnimatePresence>
-        {showContent && (
+        {isInitialized && showContent && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -14,7 +14,7 @@ function ProductCard({ product }: { product: Product }) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3 }}
-        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[rgba(212,175,55,0.12)] shadow-[0_2px_16px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[rgba(212,175,55,0.45)] hover:shadow-[0_0_30px_rgba(212,175,55,0.15),_0_8px_32px_rgba(0,0,0,0.4)]"
+        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[rgba(193,163,106,0.12)] shadow-[0_2px_16px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[rgba(193,163,106,0.45)] hover:shadow-[0_0_30px_rgba(193,163,106,0.15),_0_8px_32px_rgba(0,0,0,0.4)]"
         style={{
           background: "rgba(26,26,26,0.8)",
           backdropFilter: "blur(20px)",
@@ -26,14 +26,14 @@ function ProductCard({ product }: { product: Product }) {
           style={{ background: product.bg }}
         >
           <span
-            className="select-none text-6xl transition-transform duration-300 ease-out group-hover:scale-115 group-hover:rotate-5"
+            className="select-none text-7xl font-[family-name:var(--font-playfair)] italic font-light opacity-60 text-[#C1A36A] transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-3 group-hover:opacity-100"
           >
-            {product.emoji}
+            {product.name.charAt(0)}
           </span>
 
           {/* Badge */}
           <span
-            className="absolute left-3 top-3 rounded-full border border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.15)] px-2.5 py-1 text-xs font-medium tracking-wider text-[#D4AF37]"
+            className="absolute left-3 top-3 rounded-full border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-2.5 py-1 text-xs font-medium tracking-wider text-[#C1A36A]"
             style={{ backdropFilter: "blur(8px)" }}
           >
             {product.badge}
@@ -45,7 +45,7 @@ function ProductCard({ product }: { product: Product }) {
             style={{ backdropFilter: "blur(4px)" }}
           >
             <div
-              className="flex items-center gap-2 rounded-xl border border-[rgba(212,175,55,0.3)] bg-[rgba(212,175,55,0.15)] px-4 py-2 text-xs font-medium text-[#D4AF37] transition-all duration-200"
+              className="flex items-center gap-2 rounded-xl border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-4 py-2 text-xs font-medium text-[#C1A36A] transition-all duration-200"
             >
               <Eye size={14} />
               Quick View
@@ -57,7 +57,7 @@ function ProductCard({ product }: { product: Product }) {
         <div className="p-5">
           <p
             className="mb-1 text-xs font-light uppercase tracking-[0.25em]"
-            style={{ color: "rgba(212,175,55,0.5)" }}
+            style={{ color: "rgba(193,163,106,0.5)" }}
           >
             {product.category}
           </p>
@@ -71,14 +71,14 @@ function ProductCard({ product }: { product: Product }) {
           <div className="flex items-center justify-between">
             <span
               className="text-xl font-bold"
-              style={{ color: "#D4AF37" }}
+              style={{ color: "#C1A36A" }}
             >
               {product.price}
             </span>
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-3 py-2 text-xs font-medium text-[rgba(245,245,245,0.5)] transition-all duration-200 group-hover:border-[rgba(212,175,55,0.3)] group-hover:bg-[rgba(212,175,55,0.15)] group-hover:text-[#D4AF37]"
+              className="flex items-center gap-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] px-3 py-2 text-xs font-medium text-[rgba(245,245,245,0.5)] transition-all duration-200 group-hover:border-[rgba(193,163,106,0.3)] group-hover:bg-[rgba(193,163,106,0.15)] group-hover:text-[#C1A36A]"
             >
               <ShoppingBag size={13} />
               Add

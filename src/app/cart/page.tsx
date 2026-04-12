@@ -58,7 +58,7 @@ export default function CartPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <div className="flex items-baseline justify-between">
             <h1 className="font-[family-name:var(--font-playfair)] text-4xl font-bold text-white">Your Cart</h1>
-            <Link href="/shop" className="text-sm text-[rgba(212,175,55,0.6)] hover:text-[#D4AF37]">
+            <Link href="/shop" className="text-sm text-[rgba(193,163,106,0.6)] hover:text-[#C1A36A]">
               &larr; Back to Shop
             </Link>
           </div>
@@ -74,10 +74,10 @@ export default function CartPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex items-center justify-between gap-6 rounded-2xl border border-[rgba(212,175,55,0.15)] bg-[rgba(26,26,26,0.5)] p-4 backdrop-blur-sm">
+                        className="flex items-center justify-between gap-6 rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.5)] p-4 backdrop-blur-sm">
                       <div className="flex items-center gap-4">
                         <div className="flex h-16 w-16 items-center justify-center rounded-lg" style={{background: item.bg}}>
-                            <span className="text-3xl">{item.emoji}</span>
+                            <span className="text-3xl font-[family-name:var(--font-playfair)] italic font-light opacity-80 text-[#C1A36A]">{item.name.charAt(0)}</span>
                         </div>
                         <div>
                           <p className="font-semibold text-white">{item.name}</p>
@@ -85,7 +85,7 @@ export default function CartPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-6">
-                        <div className="flex items-center rounded-lg border border-[rgba(212,175,55,0.2)]">
+                        <div className="flex items-center rounded-lg border border-[rgba(193,163,106,0.2)]">
                           <button onClick={() => updateQuantity(item.slug, item.quantity - 1)} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Minus size={14} /></button>
                           <span className="w-8 text-center text-sm font-medium text-white">{item.quantity}</span>
                           <button onClick={() => updateQuantity(item.slug, item.quantity + 1)} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Plus size={14} /></button>
@@ -96,7 +96,7 @@ export default function CartPage() {
                   ))}
                 </ul>
 
-                <div className="mt-8 rounded-2xl border border-[rgba(212,175,55,0.15)] bg-[rgba(26,26,26,0.5)] p-6">
+                <div className="mt-8 rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.5)] p-6">
                     <div className="flex justify-between items-center text-lg">
                         <span className="font-medium text-[rgba(245,245,245,0.6)]">Subtotal</span>
                         <span className="font-bold text-white">${subtotal.toFixed(2)}</span>
@@ -108,9 +108,9 @@ export default function CartPage() {
                         whileTap={{ scale: 0.97 }}
                         className="w-full mt-6 flex items-center justify-center gap-2 rounded-xl py-3 text-base font-medium uppercase tracking-wider"
                         style={{
-                            background: 'linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)',
+                            background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
                             color: '#0D0D0D',
-                            boxShadow: '0 4px 20px rgba(212,175,55,0.3)',
+                            boxShadow: '0 4px 20px rgba(193,163,106,0.3)',
                         }}
                     >
                         <CheckCircle size={18} />
@@ -119,7 +119,7 @@ export default function CartPage() {
                 </div>
               </div>
             ) : (
-              <motion.div layout initial={{opacity:0}} animate={{opacity:1}} className="py-16 text-center border-t border-[rgba(212,175,55,0.1)] mt-8">
+              <motion.div layout initial={{opacity:0}} animate={{opacity:1}} className="py-16 text-center border-t border-[rgba(193,163,106,0.1)] mt-8">
                 <ShoppingBag size={48} className="mx-auto text-[rgba(245,245,245,0.3)]" />
                 <h2 className="mt-6 text-xl font-semibold text-white">Your cart is empty.</h2>
                 <p className="mt-2 text-[rgba(245,245,245,0.5)]">Looks like you haven't added anything to your cart yet.</p>

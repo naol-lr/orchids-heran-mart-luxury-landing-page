@@ -44,8 +44,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
           }`}
           style={{
             borderColor: scrolled
-              ? 'rgba(212,175,55,0.25)'
-              : 'rgba(212,175,55,0.12)',
+              ? 'rgba(193,163,106,0.25)'
+              : 'rgba(193,163,106,0.12)',
           }}
         >
           <div className="flex items-center justify-between px-6 py-4">
@@ -61,15 +61,15 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                     <span
                       className="font-[family-name:var(--font-playfair)] font-bold text-2xl tracking-wider"
                       style={{
-                        color: '#D4AF37',
-                        textShadow: '0 0 20px rgba(212,175,55,0.5)',
+                        color: '#C1A36A',
+                        textShadow: '0 0 20px rgba(193,163,106,0.5)',
                       }}
                     >
                       HERAN
                     </span>
                     <span
                       className="text-xs tracking-[0.25em] uppercase font-light hidden sm:block"
-                      style={{ color: 'rgba(212,175,55,0.6)' }}
+                      style={{ color: 'rgba(193,163,106,0.6)' }}
                     >
                       Mart
                     </span>
@@ -92,12 +92,12 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                     href={link.href}
                     className="relative text-sm tracking-wider uppercase font-light transition-colors duration-200 group"
                     style={{
-                      color: isActive ? '#D4AF37' : 'rgba(245,245,245,0.7)',
+                      color: isActive ? '#C1A36A' : 'rgba(245,245,245,0.7)',
                     }}
                   >
                     {link.label}
                     <span
-                      className="absolute -bottom-1 left-0 h-px bg-[#D4AF37] transition-all duration-300 group-hover:w-full"
+                      className="absolute -bottom-1 left-0 h-px bg-[#C1A36A] transition-all duration-300 group-hover:w-full"
                       style={{ width: isActive ? '100%' : '0%' }}
                     />
                   </Link>
@@ -108,7 +108,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
             {/* Right Icons */}
             <div className="flex items-center gap-3">
               <button
-                className="p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(212,175,55,0.1)] hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                className="p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)] hover:shadow-[0_0_15px_rgba(193,163,106,0.2)]"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
                 aria-label="Profile"
               >
@@ -116,7 +116,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
               </button>
               <Link
                 href="/cart"
-                className="relative p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(212,175,55,0.1)] hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                className="relative p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)] hover:shadow-[0_0_15px_rgba(193,163,106,0.2)]"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
                 aria-label="Cart"
               >
@@ -125,7 +125,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                   <motion.div 
                     initial={{scale: 0}}
                     animate={{scale: 1}}
-                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#D4AF37] text-[#0D0D0D] text-xs flex items-center justify-center font-bold">
+                    className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C1A36A] text-[#0D0D0D] text-xs flex items-center justify-center font-bold">
                     {cartCount}
                   </motion.div>
                 )}
@@ -134,17 +134,17 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                 href="/#contact"
                 className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200"
                 style={{
-                  background: 'linear-gradient(135deg, #D4AF37 0%, #B8962E 100%)',
+                  background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
                   color: '#0D0D0D',
-                  boxShadow: '0 0 15px rgba(212,175,55,0.25)',
+                  boxShadow: '0 0 15px rgba(193,163,106,0.25)',
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow =
-                    '0 0 25px rgba(212,175,55,0.5)';
+                    '0 0 25px rgba(193,163,106,0.5)';
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow =
-                    '0 0 15px rgba(212,175,55,0.25)';
+                    '0 0 15px rgba(193,163,106,0.25)';
                 }}
               >
                 Login
@@ -180,7 +180,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                     className="text-sm tracking-wider uppercase font-light py-2 border-b transition-colors duration-200"
                     style={{
                       color: 'rgba(245,245,245,0.7)',
-                      borderColor: 'rgba(212,175,55,0.1)',
+                      borderColor: 'rgba(193,163,106,0.1)',
                     }}
                   >
                     {link.label}
@@ -191,7 +191,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                   onClick={() => setMobileOpen(false)}
                   className="mt-2 text-center py-3 rounded-xl text-sm font-medium"
                   style={{
-                    background: 'linear-gradient(135deg, #D4AF37, #B8962E)',
+                    background: 'linear-gradient(135deg, #C1A36A, #8E7A53)',
                     color: '#0D0D0D',
                   }}
                 >
