@@ -177,7 +177,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
-          className="mt-20 flex items-center justify-center gap-10 md:gap-20 border-t border-[rgba(193,163,106,0.1)] pt-12"
+          className="mt-20 flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-20 border-t border-[rgba(193,163,106,0.1)] pt-12"
         >
           {[
             { value: "500+", label: "Curated Items" },
