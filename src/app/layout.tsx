@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { VisualEditsMessenger } from "orchids-visual-edits";
-import { CartProvider } from "@/context/CartContext"; // Import the CartProvider
+import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
+import AuthModal from "@/components/AuthModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,9 +39,12 @@ export default function RootLayout({
       >
         <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.03] bg-[url('https://upload.wikimedia.org/wikipedia/commons/a/a2/Noise_Texture.png')] mix-blend-overlay"></div>
         <div className="relative z-10">
-        <CartProvider> {/* Wrap the children with the CartProvider */}
-          {children}
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <AuthModal />
+          </CartProvider>
+        </AuthProvider>
           <VisualEditsMessenger />
         </div>
       </body>

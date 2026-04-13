@@ -2,7 +2,9 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Tag, Zap, Package, Diamond, Sprout, ShoppingBag } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Tag, Zap, Package, Diamond, Sprout, ShoppingBag, X, Check } from "lucide-react";
+import Link from "next/link";
 
 const promos = [
   {
@@ -11,8 +13,9 @@ const promos = [
     tag: "Limited Offering",
     headline: "20% Curated",
     subtitle: "Select artisanal snacks and confectionery items",
-    cta: "Explore Selection",
+    cta: "Discover More",
     accentColor: "#C1A36A",
+    link: "/shop?collection=curated"
   },
   {
     icon: Tag,
@@ -20,8 +23,9 @@ const promos = [
     tag: "Weekend Harvest",
     headline: "Farm Fresh",
     subtitle: "Organic, farm-fresh produce sourced every weekend",
-    cta: "View Produce",
+    cta: "Discover More",
     accentColor: "#A8BCA1", // Muted sage green
+    link: "/shop?collection=produce"
   },
   {
     icon: Package,
@@ -31,12 +35,15 @@ const promos = [
     subtitle: "Premium household necessities bundled exclusively",
     cta: "Discover More",
     accentColor: "#E6D2A8", // Champagne silver
+    link: "/shop?collection=essentials"
   },
 ];
 
 export default function PromoBanners() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  
+  const { setIsModalOpen } = useAuth();
 
   return (
     <section
@@ -86,13 +93,16 @@ export default function PromoBanners() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: i * 0.15, duration: 0.8 }}
-                className="group relative rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-500"
+                className="group relative rounded-[2rem] overflow-hidden transition-all duration-500 flex flex-col"
                 style={{
                   background: `linear-gradient(135deg, ${promo.accentColor}0A 0%, ${promo.accentColor}03 100%)`,
                   border: `1px solid ${promo.accentColor}20`,
                   backdropFilter: "blur(20px)",
                 }}
               >
+                {/* Make entire card clickable */}
+                <Link href={promo.link} className="absolute inset-0 z-10 block" aria-label={promo.cta} />
+                
                 {/* Huge subtle icon in background */}
                 <div
                   className="absolute -top-8 -right-8 text-7xl select-none pointer-events-none opacity-[0.03] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-12"
@@ -100,7 +110,7 @@ export default function PromoBanners() {
                   <BgIcon size={200} color={promo.accentColor} />
                 </div>
 
-                <div className="relative p-10 h-full flex flex-col">
+                <div className="relative p-10 h-full flex flex-col z-20 pointer-events-none">
                   {/* Tag */}
                   <div className="flex items-center gap-3 mb-6">
                     <div
@@ -141,21 +151,24 @@ export default function PromoBanners() {
                   </p>
 
                   {/* CTA */}
-                  <button
-                    className="flex items-center gap-2 text-xs font-light tracking-[0.2em] uppercase transition-all duration-300 w-max pb-1 border-b"
-                    style={{
-                      color: promo.accentColor,
-                      borderColor: `${promo.accentColor}40`,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = promo.accentColor;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = `${promo.accentColor}40`;
-                    }}
-                  >
-                    {promo.cta}
-                  </button>
+                  <div className="mt-auto">
+                    <Link
+                      href={promo.link}
+                      className="inline-flex items-center gap-2 text-xs font-light tracking-[0.2em] uppercase transition-all duration-300 pb-1 border-b relative z-30 pointer-events-auto"
+                      style={{
+                        color: promo.accentColor,
+                        borderColor: `${promo.accentColor}40`,
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = promo.accentColor;
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = `${promo.accentColor}40`;
+                      }}
+                    >
+                      {promo.cta}
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Bottom subtle gradient glow on hover */}
@@ -196,18 +209,19 @@ export default function PromoBanners() {
               <h3
                 className="font-[family-name:var(--font-playfair)] font-medium text-3xl md:text-4xl leading-tight text-[#F0F0F0]"
               >
-                Join Heran Rewards &amp; Elevate Every Visit
+                Join Heran Rewards & Elevate Every Visit
               </h3>
               <p
                 className="text-sm font-light mt-4 leading-relaxed"
                 style={{ color: "rgba(240, 240, 240, 0.5)" }}
               >
-                Earn privileges on every purchase, unlock exclusive member pricing &amp; priority access.
+                Earn privileges on every purchase, unlock exclusive member pricing & priority access.
               </p>
             </div>
             
             <button
-              className="whitespace-nowrap px-10 py-4 rounded-full text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 w-full md:w-auto"
+              onClick={() => setIsModalOpen(true)}
+              className="whitespace-nowrap px-10 py-4 rounded-full text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 w-full md:w-auto relative z-10"
               style={{
                 background: "linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)",
                 color: "#0A0A0A",
@@ -225,6 +239,7 @@ export default function PromoBanners() {
           </div>
         </motion.div>
       </div>
+
     </section>
   );
 }

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -22,6 +23,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cartCount } = useCart();
+  const { setIsModalOpen, setIsLoginView } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -111,6 +113,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                 className="p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)] hover:shadow-[0_0_15px_rgba(193,163,106,0.2)]"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
                 aria-label="Profile"
+                onClick={() => { setIsLoginView(true); setIsModalOpen(true); }}
               >
                 <User size={18} />
               </button>
@@ -130,8 +133,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                   </motion.div>
                 )}
               </Link>
-              <Link
-                href="/#contact"
+              <button
+                onClick={() => { setIsLoginView(true); setIsModalOpen(true); }}
                 className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200"
                 style={{
                   background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
@@ -148,7 +151,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                 }}
               >
                 Login
-              </Link>
+              </button>
               <button
                 className="md:hidden p-2 rounded-xl"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
@@ -186,17 +189,16 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href="/#contact"
-                  onClick={() => setMobileOpen(false)}
-                  className="mt-2 text-center py-3 rounded-xl text-sm font-medium"
+                <button
+                  onClick={() => { setMobileOpen(false); setIsLoginView(false); setIsModalOpen(true); }}
+                  className="mt-2 text-center py-3 rounded-xl text-sm font-medium w-full"
                   style={{
                     background: 'linear-gradient(135deg, #C1A36A, #8E7A53)',
                     color: '#0D0D0D',
                   }}
                 >
-                  Login / Register
-                </Link>
+                  Join / Register
+                </button>
               </div>
             </motion.div>
           )}
