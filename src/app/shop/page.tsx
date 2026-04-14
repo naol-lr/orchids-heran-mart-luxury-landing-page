@@ -1,30 +1,54 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import ProductGrid from '@/components/ProductGrid';
-import { products } from '@/data/products';
-import { Search, X } from 'lucide-react';
-
-// Get unique categories for filtering
-const categories = [
-  'All',
-  ...Array.from(new Set(products.map((p) => p.category))),
-];
-
-// Price ranges for filtering
-const priceRanges = [
-  { label: 'All', min: 0, max: Infinity },
-  { label: 'Under $5', min: 0, max: 5 },
-  { label: '$5 - $10', min: 5, max: 10 },
-  { label: 'Over $10', min: 10, max: Infinity },
-];
+import { Product } from '@/data/products';
+import { Search, X, Loader2 } from 'lucide-react';
+import { db } from '@/lib/firebase/firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 export default function ShopPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  
+  const priceRanges = [
+    { label: 'All', min: 0, max: Infinity },
+    { label: 'Under $5', min: 0, max: 5 },
+    { label: '$5 - $10', min: 5, max: 10 },
+    { label: 'Over $10', min: 10, max: Infinity },
+  ];
+  
   const [activePriceRange, setActivePriceRange] = useState(priceRanges[0]);
+
+  useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProducts = async () => {
+      try {
+        const q = query(collection(db, 'products'));
+        const querySnapshot = await getDocs(q);
+        const productsData = querySnapshot.docs.map(doc => doc.data() as Product);
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const categories = useMemo(() => {
+    return ['All', ...Array.from(new Set(products.map((p) => p.category)))];
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
     return products
@@ -35,15 +59,15 @@ export default function ShopPage() {
       })
       .filter((p) => {
         // Price filter
-        const price = parseFloat(p.price.substring(1));
-        return price >= activePriceRange.min && price < activePriceRange.max;
+        const priceValue = typeof p.price === 'string' ? parseFloat(p.price.replace('$', '')) : p.price;
+        return priceValue >= activePriceRange.min && priceValue < activePriceRange.max;
       })
       .filter((p) => {
         // Search term filter
         if (searchTerm === '') return true;
         return p.name.toLowerCase().includes(searchTerm.toLowerCase());
       });
-  }, [searchTerm, activeCategory, activePriceRange]);
+  }, [products, searchTerm, activeCategory, activePriceRange]);
 
   return (
     <div style={{ background: '#0D0D0D', minHeight: '100vh' }}>
@@ -126,7 +150,17 @@ export default function ShopPage() {
       </div>
 
       {/* Product Grid */}
-      <ProductGrid products={filteredProducts} />
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="w-10 h-10 text-[#C1A36A] animate-spin" />
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-20">
+           <p className="text-white/40">No products found in the store.</p>
+        </div>
+      ) : (
+        <ProductGrid products={filteredProducts} />
+      )}
     </div>
   );
 }

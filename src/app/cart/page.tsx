@@ -5,20 +5,48 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import { useCart } from '@/context/CartContext';
-import { Plus, Minus, Trash2, ShoppingBag, CheckCircle, PackageCheck } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { db } from '@/lib/firebase/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Plus, Minus, Trash2, ShoppingBag, CheckCircle, PackageCheck, Loader2 } from 'lucide-react';
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { user, userData, setIsModalOpen } = useAuth();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = parseFloat(item.price.replace('$', ''));
+    const price = typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : item.price;
     return sum + price * item.quantity;
   }, 0);
 
-  const handlePlaceOrder = () => {
-    setOrderPlaced(true);
-    clearCart();
+  const handlePlaceOrder = async () => {
+    if (!user) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    setIsPlacingOrder(true);
+    try {
+      await addDoc(collection(db, 'orders'), {
+        userId: user.uid,
+        userName: userData?.name || user.displayName || 'Guest',
+        userEmail: user.email,
+        items: cartItems,
+        total: subtotal,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+
+      setOrderPlaced(true);
+      clearCart();
+    } catch (error) {
+      console.error("Error placing order: ", error);
+      alert("Failed to place order. Please try again.");
+    } finally {
+      setIsPlacingOrder(false);
+    }
   }
 
   if (orderPlaced) {
@@ -104,17 +132,24 @@ export default function CartPage() {
                     <p className="mt-2 text-xs text-center text-[rgba(245,245,245,0.4)]">Final price will be confirmed at the store.</p>
                     <motion.button
                         onClick={handlePlaceOrder}
+                        disabled={isPlacingOrder}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
-                        className="w-full mt-6 flex items-center justify-center gap-2 rounded-xl py-3 text-base font-medium uppercase tracking-wider"
+                        className="w-full mt-6 flex items-center justify-center gap-2 rounded-xl py-3 text-base font-medium uppercase tracking-wider disabled:opacity-50"
                         style={{
                             background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
                             color: '#0D0D0D',
                             boxShadow: '0 4px 20px rgba(193,163,106,0.3)',
                         }}
                     >
-                        <CheckCircle size={18} />
-                        Prepare for Pickup
+                        {isPlacingOrder ? (
+                            <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                            <>
+                                <CheckCircle size={18} />
+                                Prepare for Pickup
+                            </>
+                        )}
                     </motion.button>
                 </div>
               </div>

@@ -16,8 +16,12 @@ import {
   CheckCircle2, 
   AlertCircle,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Package,
+  ExternalLink
 } from 'lucide-react';
+import { db } from '@/lib/firebase/firebase';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 
 type Tab = 'history' | 'settings';
 
@@ -33,12 +37,43 @@ export default function ProfilePage() {
   const [updating, setUpdating] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Orders State
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
       router.push('/');
     }
-  }, [isLoggedIn, loading, router]);
+    
+    if (user) {
+      fetchOrders();
+    }
+  }, [isLoggedIn, loading, router, user]);
+
+  const fetchOrders = async () => {
+    if (!user) return;
+    setLoadingOrders(true);
+    try {
+      const q = query(
+        collection(db, 'orders'),
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
+      const ordersData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+      }));
+      setOrders(ordersData);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   useEffect(() => {
     if (userData) {
@@ -202,28 +237,69 @@ export default function ProfilePage() {
                   exit={{ opacity: 0, y: -20 }}
                   className="space-y-6"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-2xl font-[family-name:var(--font-playfair)]">Recent Orders</h2>
-                  </div>
-
-                  {/* Placeholder for Order History */}
-                  <div className="glass-strong rounded-3xl border border-white/10 overflow-hidden">
-                    <div className="p-12 text-center">
-                      <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <ShoppingBag size={24} className="text-white/20" />
-                      </div>
-                      <h3 className="text-lg font-medium mb-2">No orders yet</h3>
-                      <p className="text-white/40 text-sm max-w-xs mx-auto mb-8">
-                        Your luxury collection starts here. Explore our curated selection and find your first piece.
-                      </p>
-                      <button 
-                        onClick={() => router.push('/shop')}
-                        className="px-8 py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-[#C1A36A] transition-colors"
-                      >
-                        Start Shopping
-                      </button>
+                  {loadingOrders ? (
+                    <div className="flex justify-center py-12">
+                      <Loader2 className="w-8 h-8 text-[#C1A36A] animate-spin" />
                     </div>
-                  </div>
+                  ) : orders.length > 0 ? (
+                    <div className="space-y-4">
+                      {orders.map((order) => (
+                        <div key={order.id} className="glass-strong rounded-3xl border border-white/10 overflow-hidden">
+                          <div className="p-6 border-b border-white/5 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center">
+                                <Package size={20} className="text-[#C1A36A]" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm">Order #{order.id.slice(-6).toUpperCase()}</h4>
+                                <p className="text-xs text-white/40">{order.createdAt.toLocaleDateString()} • {order.items.length} items</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                              <div className="text-right">
+                                <p className="text-sm font-bold">${order.total.toFixed(2)}</p>
+                                <span className={`text-[10px] uppercase tracking-widest ${
+                                  order.status === 'completed' ? 'text-green-400' : 
+                                  order.status === 'processing' ? 'text-blue-400' : 'text-[#C1A36A]'
+                                }`}>
+                                  {order.status}
+                                </span>
+                              </div>
+                              <ChevronRight size={18} className="text-white/20" />
+                            </div>
+                          </div>
+                          <div className="p-6 bg-white/[0.02]">
+                            <div className="flex flex-wrap gap-2">
+                              {order.items.map((item: any, idx: number) => (
+                                <div key={idx} className="flex items-center gap-2 bg-white/5 rounded-full px-3 py-1 border border-white/5">
+                                  <span className="text-xs text-[#C1A36A] font-medium">{item.quantity}x</span>
+                                  <span className="text-xs text-white/70">{item.name}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="glass-strong rounded-3xl border border-white/10 overflow-hidden">
+                      <div className="p-12 text-center">
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                          <ShoppingBag size={24} className="text-white/20" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-2">No orders yet</h3>
+                        <p className="text-white/40 text-sm max-w-xs mx-auto mb-8">
+                          Your luxury collection starts here. Explore our curated selection and find your first piece.
+                        </p>
+                        <button 
+                          onClick={() => router.push('/shop')}
+                          className="px-8 py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-[#C1A36A] transition-colors"
+                        >
+                          Start Shopping
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div

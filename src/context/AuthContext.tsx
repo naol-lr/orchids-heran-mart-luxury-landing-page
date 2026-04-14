@@ -59,6 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Listen for Firebase auth state changes
   useEffect(() => {
+    if (!auth || !db) {
+      setLoading(false);
+      return;
+    }
+
     let unsubscribeUserData: () => void = () => {};
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -110,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, password: string) => {
+    if (!auth) return;
     setAuthError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -121,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (name: string, email: string, password: string) => {
+    if (!auth || !db) return;
     setAuthError(null);
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
@@ -147,6 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
+    if (!auth || !db) return;
     setAuthError(null);
     try {
       const provider = new GoogleAuthProvider();
@@ -174,11 +182,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (!auth) return;
     await signOut(auth);
   };
 
   const updateTier = async (tier: string) => {
-    if (!user) return;
+    if (!user || !db) return;
     try {
       await setDoc(doc(db, 'users', user.uid), { tier }, { merge: true });
     } catch (err) {
@@ -188,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUserData = async (data: any) => {
-    if (!user) return;
+    if (!user || !db || !auth) return;
     try {
       await setDoc(doc(db, 'users', user.uid), data, { merge: true });
       // If name is being updated, also update Firebase Auth profile

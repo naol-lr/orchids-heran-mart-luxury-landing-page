@@ -1,19 +1,59 @@
 'use client';
 
-import { useState } from 'react';
-import { notFound } from 'next/navigation';
-import { products } from '@/data/products';
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { Product } from '@/data/products';
 import Navbar from '@/components/Navbar';
 import { motion } from 'framer-motion';
-import { Star, Plus, Minus, ShoppingBag, Check } from 'lucide-react';
+import { Star, Plus, Minus, ShoppingBag, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { db } from '@/lib/firebase/firebase';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = products.find((p) => p.slug === params.slug);
+export default function ProductPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProduct = async () => {
+      try {
+        const q = query(collection(db, 'products'), where('slug', '==', slug));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          setProduct(querySnapshot.docs[0].data() as Product);
+        }
+      } catch (error) {
+        console.error("Error fetching product: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchProduct();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#C1A36A] animate-spin" />
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
@@ -30,6 +70,13 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
+  // Default values for missing properties
+  const details = product.details || [];
+  const reviews = product.reviews || [];
+  const averageRating = reviews.length > 0 
+    ? Math.round(reviews.reduce((a, r) => a + r.rating, 0) / reviews.length) 
+    : 5;
+
   return (
     <div style={{ background: '#0D0D0D', minHeight: '100vh' }}>
       <Navbar />
@@ -43,19 +90,21 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             transition={{ duration: 0.7, ease: 'easeOut' }}
             className="relative flex aspect-square items-center justify-center rounded-3xl border border-[rgba(193,163,106,0.15)] p-8"
             style={{
-              background: product.bg,
+              background: product.bg || 'rgba(193,163,106,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             }}
           >
             <span className="select-none text-8xl font-[family-name:var(--font-playfair)] italic font-light opacity-60 text-[#C1A36A] transition-transform duration-300 ease-out md:text-9xl">
               {product.name.charAt(0)}
             </span>
-            <span
-              className="absolute left-4 top-4 rounded-full border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-3 py-1 text-xs font-medium tracking-wider text-[#C1A36A]"
-              style={{ backdropFilter: 'blur(8px)' }}
-            >
-              {product.badge}
-            </span>
+            {product.badge && (
+              <span
+                className="absolute left-4 top-4 rounded-full border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-3 py-1 text-xs font-medium tracking-wider text-[#C1A36A]"
+                style={{ backdropFilter: 'blur(8px)' }}
+              >
+                {product.badge}
+              </span>
+            )}
           </motion.div>
 
           {/* Details Section */}
@@ -86,7 +135,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                     <Star
                       key={i}
                       size={16}
-                      className={i < Math.round(product.reviews.reduce((a, r) => a + r.rating, 0) / product.reviews.length) ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'}
+                      className={i < averageRating ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'}
                       fill="currentColor"
                     />
                   ))}
@@ -98,17 +147,19 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               </p>
             </div>
 
-            <div className="mt-8 flex-grow">
-                <h3 className="text-sm uppercase tracking-widest text-[rgba(193,163,106,0.6)]">Includes</h3>
-                <ul className="mt-4 space-y-2">
-                    {product.details.map(detail => (
-                        <li key={detail} className="flex items-center gap-3 text-sm font-light text-[rgba(245,245,245,0.5)]">
-                            <Check size={14} className="text-[#C1A36A]" />
-                            {detail}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {details.length > 0 && (
+              <div className="mt-8 flex-grow">
+                  <h3 className="text-sm uppercase tracking-widest text-[rgba(193,163,106,0.6)]">Includes</h3>
+                  <ul className="mt-4 space-y-2">
+                      {details.map(detail => (
+                          <li key={detail} className="flex items-center gap-3 text-sm font-light text-[rgba(245,245,245,0.5)]">
+                              <Check size={14} className="text-[#C1A36A]" />
+                              {detail}
+                          </li>
+                      ))}
+                  </ul>
+              </div>
+            )}
             
             {/* Add to Cart Section */}
             <div className="mt-10 flex items-center gap-4">
@@ -144,29 +195,31 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
 
         {/* Reviews Section */}
-        <div className="mt-20">
-          <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
-           <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-               {product.reviews.map((review, i) => (
-                   <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: i * 0.1}}
-                    className="rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.7)] p-6 backdrop-blur-sm">
-                       <div className="flex items-center justify-between">
-                           <p className="font-semibold text-white">{review.author}</p>
-                           <div className="flex items-center">
-                               {[...Array(5)].map((_, i) => (
-                                   <Star key={i} size={14} className={i < review.rating ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'} fill="currentColor" />
-                               ))}
-                           </div>
-                       </div>
-                       <p className="mt-4 text-sm font-light text-[rgba(245,245,245,0.6)]">{review.text}</p>
-                   </motion.div>
-               ))}
-           </div>
-        </div>
+        {reviews.length > 0 && (
+          <div className="mt-20">
+            <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
+            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                {reviews.map((review: any, i: number) => (
+                    <motion.div 
+                      key={i} 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: i * 0.1}}
+                      className="rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.7)] p-6 backdrop-blur-sm">
+                        <div className="flex items-center justify-between">
+                            <p className="font-semibold text-white">{review.author}</p>
+                            <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} size={14} className={i < review.rating ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'} fill="currentColor" />
+                                ))}
+                            </div>
+                        </div>
+                        <p className="mt-4 text-sm font-light text-[rgba(245,245,245,0.6)]">{review.text}</p>
+                    </motion.div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

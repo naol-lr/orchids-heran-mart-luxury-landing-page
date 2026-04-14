@@ -1,7 +1,7 @@
 // Firebase Client SDK initialization
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -13,14 +13,37 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only once
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Check if we have the minimum required config to initialize
+const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'undefined';
 
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+if (typeof window !== 'undefined' || isConfigValid) {
+  try {
+    if (getApps().length === 0) {
+      if (isConfigValid) {
+        app = initializeApp(firebaseConfig);
+      }
+    } else {
+      app = getApp();
+    }
+
+    if (app) {
+      auth = getAuth(app);
+      db = getFirestore(app);
+    }
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
+}
+
+export { app, auth, db };
 
 // Analytics - only runs in the browser
-export const analytics = typeof window !== 'undefined' ? isSupported().then(yes => yes ? getAnalytics(app) : null) : null;
+export const analytics = (typeof window !== 'undefined' && app) 
+  ? isSupported().then(yes => yes ? getAnalytics(app!) : null) 
+  : Promise.resolve(null);
 
 export default app;

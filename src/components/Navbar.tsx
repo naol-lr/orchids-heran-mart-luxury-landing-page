@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, User, Menu, X, LogOut, ChevronDown, Settings, Clock } from 'lucide-react';
+import { ShoppingBag, User, Menu, X, LogOut, ChevronDown, Settings, Clock, LayoutDashboard } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -26,7 +26,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const { cartCount } = useCart();
-  const { setIsModalOpen, setIsLoginView, isLoggedIn, user, logout, loading } = useAuth();
+  const { setIsModalOpen, setIsLoginView, isLoggedIn, user, userData, logout, loading } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -216,6 +216,17 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                           <User size={14} className="text-[#C1A36A]" />
                           Profile & Settings
                         </Link>
+
+                        {userData?.isAdmin && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                          >
+                            <LayoutDashboard size={14} className="text-[#C1A36A]" />
+                            Admin Dashboard
+                          </Link>
+                        )}
 
                         <button
                           onClick={handleLogout}
