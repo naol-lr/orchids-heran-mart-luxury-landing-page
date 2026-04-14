@@ -23,6 +23,14 @@
 # misc
 .DS_Store
 *.pem
+.env.local
+.env
+.env.*.local
+
+# env files (contains secrets - never commit these)
+.env
+.env.local
+.env.*.local
 
 # debug
 npm-debug.log*
