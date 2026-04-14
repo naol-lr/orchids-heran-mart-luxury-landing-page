@@ -41,6 +41,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateTier: (tier: string) => Promise<void>;
   updateUserData: (data: any) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 
   // Error state
   authError: string | null;
@@ -109,8 +110,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return 'Too many attempts. Please wait a moment and try again.';
       case 'auth/popup-closed-by-user':
         return 'Sign-in popup was closed. Please try again.';
+      case 'auth/operation-not-allowed':
+        return 'This sign-in method is not enabled. Please contact support.';
+      case 'auth/unauthorized-domain':
+        return 'This domain is not authorized for Firebase Auth. Check your Firebase console.';
+      case 'auth/cancelled-popup-request':
+        return 'Sign-in was cancelled. Please try again.';
       default:
-        return 'An unexpected error occurred. Please try again.';
+        console.error("Firebase Auth Error:", error);
+        return `An unexpected error occurred (${error.code}). Please try again.`;
     }
   };
 
@@ -138,16 +146,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Create Firestore user document
-      await setDoc(doc(db, 'users', credential.user.uid), {
+      const userRef = doc(db, 'users', credential.user.uid);
+      await setDoc(userRef, {
         uid: credential.user.uid,
         name: name || '',
         email: email,
         tier: 'none',
         createdAt: new Date().toISOString(),
       });
+      console.log("Firestore user created successfully for:", email);
 
       setIsModalOpen(false);
     } catch (err) {
+      console.error("Signup/Firestore Error:", err);
       setAuthError(formatError(err as AuthError));
       throw err;
     }
@@ -172,10 +183,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           tier: 'none',
           createdAt: new Date().toISOString(),
         });
+        console.log("Firestore user created via Google for:", credential.user.email);
       }
 
       setIsModalOpen(false);
     } catch (err) {
+      console.error("Google Login/Firestore Error:", err);
       setAuthError(formatError(err as AuthError));
       throw err;
     }
@@ -210,6 +223,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const resetPassword = async (email: string) => {
+    if (!auth) return;
+    try {
+      const { sendPasswordResetEmail } = await import('firebase/auth');
+      await sendPasswordResetEmail(auth, email);
+    } catch (err) {
+      console.error('Password reset error:', err);
+      setAuthError(formatError(err as AuthError));
+      throw err;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -227,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         updateTier,
         updateUserData,
+        resetPassword,
         authError,
         setAuthError,
       }}

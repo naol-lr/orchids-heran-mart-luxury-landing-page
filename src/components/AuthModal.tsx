@@ -19,6 +19,7 @@ export default function AuthModal() {
     updateTier,
     authError,
     setAuthError,
+    resetPassword,
   } = useAuth();
   const router = useRouter();
 
@@ -28,6 +29,8 @@ export default function AuthModal() {
   const [loading, setLoading] = useState(false);
   const [tierLoading, setTierLoading] = useState<string | null>(null);
   const [showPlans, setShowPlans] = useState(false);
+  const [isResetView, setIsResetView] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -35,8 +38,9 @@ export default function AuthModal() {
     setAuthError(null);
     setShowPlans(false);
     setName('');
-    setEmail('');
     setPassword('');
+    setIsResetView(false);
+    setResetSent(false);
   };
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -64,6 +68,20 @@ export default function AuthModal() {
       await loginWithGoogle();
       handleClose();
       router.push('/shop');
+    } catch {
+      // Error handled in context
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setAuthError(null);
+    try {
+      await resetPassword(email);
+      setResetSent(true);
     } catch {
       // Error handled in context
     } finally {
@@ -155,8 +173,8 @@ export default function AuthModal() {
                       </motion.div>
                     )}
 
-                    <form onSubmit={handleAuthSubmit} className="space-y-5">
-                      {!isLoginView && (
+                    <form onSubmit={isResetView ? handleResetPassword : handleAuthSubmit} className="space-y-5">
+                      {!isLoginView && !isResetView && (
                         <div>
                           <label className="block text-[10px] uppercase tracking-[0.2em] text-[#C1A36A] mb-2 font-medium">
                             Full Name
@@ -184,24 +202,57 @@ export default function AuthModal() {
                           placeholder="jane@example.com"
                         />
                       </div>
-                      <div>
-                        <label className="block text-[10px] uppercase tracking-[0.2em] text-[#C1A36A] mb-2 font-medium">
-                          Password
-                        </label>
-                        <input
-                          required
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#C1A36A] transition-colors placeholder-gray-600"
-                          placeholder="••••••••"
-                        />
-                      </div>
+                      {isLoginView && !isResetView && (
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <label className="text-[10px] uppercase tracking-[0.2em] text-[#C1A36A] font-medium">
+                              Password
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => { setIsResetView(true); setAuthError(null); }}
+                              className="text-[10px] text-[#C1A36A]/60 hover:text-[#C1A36A] transition-colors uppercase tracking-widest"
+                            >
+                              Forgot?
+                            </button>
+                          </div>
+                          <input
+                            required
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#C1A36A] transition-colors placeholder-gray-600"
+                            placeholder="••••••••"
+                          />
+                        </div>
+                      )}
+                      {!isLoginView && (
+                        <div>
+                          <label className="block text-[10px] uppercase tracking-[0.2em] text-[#C1A36A] mb-2 font-medium">
+                            Password
+                          </label>
+                          <input
+                            required
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#C1A36A] transition-colors placeholder-gray-600"
+                            placeholder="••••••••"
+                          />
+                        </div>
+                      )}
+
+                      {resetSent && (
+                        <div className="text-sm text-green-400 bg-green-500/10 border border-green-500/20 px-4 py-3 rounded-xl flex items-center gap-2">
+                          <Check size={16} />
+                          Reset link sent to your email
+                        </div>
+                      )}
 
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full mt-8 py-4 rounded-xl text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60"
+                        className="w-full mt-4 py-4 rounded-xl text-xs font-semibold tracking-[0.2em] uppercase transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60"
                         style={{
                           background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
                           color: '#0A0A0A',
@@ -210,12 +261,24 @@ export default function AuthModal() {
                       >
                         {loading ? (
                           <Loader2 size={16} className="animate-spin" />
+                        ) : isResetView ? (
+                          'Send Reset Link'
                         ) : isLoginView ? (
                           'Sign In'
                         ) : (
                           'Create Account'
                         )}
                       </button>
+
+                      {isResetView && (
+                        <button
+                          type="button"
+                          onClick={() => { setIsResetView(false); setAuthError(null); setResetSent(false); }}
+                          className="w-full text-xs text-[#C1A36A]/60 hover:text-[#C1A36A] transition-colors uppercase tracking-[0.2em] mt-2"
+                        >
+                          Back to Login
+                        </button>
+                      )}
                     </form>
 
                     {/* Divider */}

@@ -53,8 +53,11 @@ export default function AdminDashboard() {
     slug: '',
     emoji: '🏷️',
     bg: 'rgba(193,163,106,0.1)',
-    badge: 'New'
+    badge: 'New',
+    details: ['Premium quality', 'Sourced responsibly']
   });
+  
+  const [addStatus, setAddStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (!loading) {
@@ -104,11 +107,22 @@ export default function AdminDashboard() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAddStatus('saving');
     try {
-      const slug = newProduct.name.toLowerCase().replace(/\s+/g, '-');
+      const slug = newProduct.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       const productData = { ...newProduct, slug };
-      await addDoc(collection(db, 'products'), productData);
-      setIsAddingProduct(false);
+      
+      // Use the slug as the document ID for consistency, or let Firestore generate one
+      // We'll use setDoc with doc(collection, slug) to ensure slugs act as primary keys
+      const { doc, setDoc } = await import('firebase/firestore');
+      await setDoc(doc(db, 'products', slug), productData);
+      
+      setAddStatus('success');
+      setTimeout(() => {
+        setIsAddingProduct(false);
+        setAddStatus('idle');
+      }, 1500);
+      
       setNewProduct({
         name: '',
         category: '',
@@ -117,11 +131,13 @@ export default function AdminDashboard() {
         slug: '',
         emoji: '🏷️',
         bg: 'rgba(193,163,106,0.1)',
-        badge: 'New'
+        badge: 'New',
+        details: ['Premium quality', 'Sourced responsibly']
       });
       fetchData();
     } catch (err) {
       console.error('Failed to add product:', err);
+      setAddStatus('error');
     }
   };
 
@@ -411,19 +427,38 @@ export default function AdminDashboard() {
                         <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Description</label>
                         <textarea 
                            required
-                           rows={3}
+                           rows={2}
                            value={newProduct.description}
                            onChange={e => setNewProduct({...newProduct, description: e.target.value})}
                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50 resize-none" 
                            placeholder="Describe the quality and origin..."
                         />
                      </div>
+
+                     <div className="space-y-2">
+                        <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Extra Details (comma separated)</label>
+                        <input 
+                           type="text" 
+                           value={newProduct.details.join(', ')}
+                           onChange={e => setNewProduct({...newProduct, details: e.target.value.split(',').map(s => s.trim())})}
+                           placeholder="Premium quality, Organic, Fair Trade"
+                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50" 
+                        />
+                     </div>
+
                      <div className="flex gap-4 pt-4">
                         <button 
                            type="submit"
-                           className="flex-1 py-4 bg-[#C1A36A] text-black rounded-2xl text-sm font-bold tracking-widest uppercase hover:bg-white transition-all duration-300 shadow-xl shadow-[#C1A36A]/20"
+                           disabled={addStatus === 'saving'}
+                           className={`flex-1 py-4 rounded-2xl text-sm font-bold tracking-widest uppercase transition-all duration-300 shadow-xl ${
+                              addStatus === 'success' ? 'bg-green-500 text-white' : 
+                              addStatus === 'error' ? 'bg-red-500 text-white' :
+                              'bg-[#C1A36A] text-black hover:bg-white'
+                           }`}
                         >
-                           Publish Product
+                           {addStatus === 'saving' ? <Loader2 className="animate-spin mx-auto" size={18} /> : 
+                            addStatus === 'success' ? 'Product Added!' : 
+                            addStatus === 'error' ? 'Failed to Add' : 'Publish Product'}
                         </button>
                         <button 
                            type="button"
