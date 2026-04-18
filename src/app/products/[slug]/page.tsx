@@ -40,7 +40,8 @@ export default function ProductPage() {
         const querySnapshot = await getDocs(q);
         
         if (!querySnapshot.empty) {
-          setProduct(querySnapshot.docs[0].data() as Product);
+          const docRef = querySnapshot.docs[0];
+          setProduct({ id: docRef.id, ...docRef.data() } as Product);
         }
       } catch (error) {
         console.error("Error fetching product: ", error);
