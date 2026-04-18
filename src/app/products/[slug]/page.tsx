@@ -96,12 +96,24 @@ export default function ProductPage() {
         text: reviewText
       };
 
-      const updatedReviews = [...(product.reviews || []), newReview];
-      await updateDoc(doc(db, 'products', product.id), {
-        reviews: updatedReviews
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          review: newReview,
+        }),
       });
 
-      setProduct({ ...product, reviews: updatedReviews });
+      if (!response.ok) {
+        throw new Error('Failed to submit review via API');
+      }
+
+      const responseData = await response.json();
+
+      setProduct({ ...product, reviews: responseData.reviews });
       setReviewText('');
       setReviewRating(5);
       setShowReviewForm(false);
