@@ -4,6 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Send, CheckCircle, Youtube } from "lucide-react";
+import { db } from "@/lib/firebase/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // Store hours logic
 function useStoreOpen() {
@@ -53,12 +55,26 @@ export default function ContactPage() {
 
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
-    setForm({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      if (db) {
+        await addDoc(collection(db, "messages"), {
+          ...form,
+          createdAt: serverTimestamp(),
+        });
+      }
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 4000);
+      setForm({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -372,17 +388,24 @@ export default function ContactPage() {
 
                 <motion.button
                   type="submit"
+                  disabled={isSubmitting}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-medium tracking-wider uppercase transition-all duration-300"
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-medium tracking-wider uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: "linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)",
                     color: "#0D0D0D",
                     boxShadow: "0 4px 20px rgba(193,163,106,0.3)",
                   }}
                 >
-                  <Send size={15} />
-                  Send Message
+                  {isSubmitting ? (
+                    <div className="w-5 h-5 border-2 border-[#0D0D0D]/30 border-t-[#0D0D0D] rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Send size={15} />
+                      Send Message
+                    </>
+                  )}
                 </motion.button>
               </form>
             )}

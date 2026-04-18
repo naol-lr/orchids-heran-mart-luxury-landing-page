@@ -9,7 +9,7 @@ import { Star, Plus, Minus, ShoppingBag, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { db } from '@/lib/firebase/firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function ProductPage() {
   const params = useParams();
@@ -88,15 +88,23 @@ export default function ProductPage() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="relative flex aspect-square items-center justify-center rounded-3xl border border-[rgba(193,163,106,0.15)] p-8"
+            className="relative flex aspect-square items-center justify-center rounded-3xl border border-[rgba(193,163,106,0.15)] overflow-hidden"
             style={{
               background: product.bg || 'rgba(193,163,106,0.1)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             }}
           >
-            <span className="select-none text-8xl font-[family-name:var(--font-playfair)] italic font-light opacity-60 text-[#C1A36A] transition-transform duration-300 ease-out md:text-9xl">
-              {product.name.charAt(0)}
-            </span>
+            {product.image ? (
+              <img 
+                src={product.image} 
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="select-none text-8xl font-[family-name:var(--font-playfair)] italic font-light opacity-60 text-[#C1A36A] transition-transform duration-300 ease-out md:text-9xl">
+                {product.name.charAt(0)}
+              </span>
+            )}
             {product.badge && (
               <span
                 className="absolute left-4 top-4 rounded-full border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.15)] px-3 py-1 text-xs font-medium tracking-wider text-[#C1A36A]"
@@ -199,7 +207,7 @@ export default function ProductPage() {
           <div className="mt-20">
             <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                {reviews.map((review: any, i: number) => (
+                {reviews.map((review, i: number) => (
                     <motion.div 
                       key={i} 
                       initial={{ opacity: 0, y: 20 }}

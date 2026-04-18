@@ -5,16 +5,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { 
-  LayoutDashboard, 
   ShoppingBag, 
-  Users, 
   PlusCircle, 
   Loader2, 
   Package, 
   CheckCircle, 
-  XCircle, 
   TrendingUp,
-  Search,
   Image as ImageIcon
 } from 'lucide-react';
 import { db } from '@/lib/firebase/firebase';
@@ -23,41 +19,66 @@ import {
   getDocs, 
   orderBy, 
   query, 
-  addDoc, 
   doc, 
   updateDoc, 
   serverTimestamp 
 } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { seedProducts } from '@/lib/firebase/seed';
+import { Product } from '@/data/products';
 
 type AdminTab = 'orders' | 'products' | 'users';
 
+interface ProductReview {
+  rating: number;
+  text: string;
+  author: string;
+}
+
+interface Order {
+  id: string;
+  userName: string;
+  userEmail: string;
+  total: number;
+  status: string;
+  createdAt: Date;
+}
+
 export default function AdminDashboard() {
-  const { user, userData, isLoggedIn, loading } = useAuth();
+  const { userData, isLoggedIn, loading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AdminTab>('orders');
   
   // Data State
-  const [orders, setOrders] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   
   // Form State
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newProduct, setNewProduct] = useState({
     name: '',
     category: '',
     price: '',
     description: '',
+    image: '',
     slug: '',
     emoji: '🏷️',
     bg: 'rgba(193,163,106,0.1)',
     badge: 'New',
-    details: ['Premium quality', 'Sourced responsibly']
+    details: ['Premium quality', 'Sourced responsibly'],
+    reviews: [] as ProductReview[]
   });
   
   const [addStatus, setAddStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+
+  // Review State
+  const [isAddingReview, setIsAddingReview] = useState<string | null>(null);
+  const [newReview, setNewReview] = useState<ProductReview>({
+    rating: 5,
+    text: '',
+    author: ''
+  });
 
   useEffect(() => {
     if (!loading) {
@@ -73,26 +94,28 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (isLoggedIn && userData?.isAdmin && db) {
       fetchData();
-    } else if (isLoggedIn && userData?.isAdmin && !db) {
-      setLoadingData(false);
     }
   }, [isLoggedIn, userData]);
 
   const fetchData = async () => {
     if (!db) return;
-    setLoadingData(true);
     try {
       // Fetch Orders
       const ordersSnap = await getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc')));
-      setOrders(ordersSnap.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate() || new Date() })));
+      setOrders(ordersSnap.docs.map(d => {
+        const data = d.data();
+        return { 
+          id: d.id, 
+          ...data, 
+          createdAt: (data as { createdAt?: { toDate: () => Date } }).createdAt?.toDate() || new Date() 
+        } as Order;
+      }));
       
       // Fetch Products
       const productsSnap = await getDocs(collection(db, 'products'));
-      setProducts(productsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setProducts(productsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
     } catch (err) {
       console.error('Error fetching admin data:', err);
-    } finally {
-      setLoadingData(false);
     }
   };
 
@@ -105,21 +128,48 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddProduct = async (e: React.FormEvent) => {
+  const handleEditProduct = (product: Product) => {
+    setEditingProductId(product.id || null);
+    setNewProduct({
+      name: product.name || '',
+      category: product.category || '',
+      price: product.price || '',
+      description: product.description || '',
+      image: product.image || '',
+      slug: product.slug || '',
+      emoji: product.emoji || '🏷️',
+      bg: product.bg || 'rgba(193,163,106,0.1)',
+      badge: product.badge || 'New',
+      details: product.details || ['Premium quality', 'Sourced responsibly'],
+      reviews: product.reviews || []
+    });
+    setIsAddingProduct(true);
+  };
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setAddStatus('saving');
     try {
-      const slug = newProduct.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const productData = { ...newProduct, slug };
+      const slug = newProduct.slug || newProduct.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const productData = { 
+        ...newProduct, 
+        slug, 
+        updatedAt: serverTimestamp(),
+        ...(editingProductId ? {} : { createdAt: serverTimestamp() })
+      };
       
-      // Use the slug as the document ID for consistency, or let Firestore generate one
-      // We'll use setDoc with doc(collection, slug) to ensure slugs act as primary keys
-      const { doc, setDoc } = await import('firebase/firestore');
-      await setDoc(doc(db, 'products', slug), productData);
+      const { doc, setDoc, updateDoc } = await import('firebase/firestore');
+      
+      if (editingProductId) {
+        await updateDoc(doc(db, 'products', editingProductId), productData);
+      } else {
+        await setDoc(doc(db, 'products', slug), productData);
+      }
       
       setAddStatus('success');
       setTimeout(() => {
         setIsAddingProduct(false);
+        setEditingProductId(null);
         setAddStatus('idle');
       }, 1500);
       
@@ -128,16 +178,47 @@ export default function AdminDashboard() {
         category: '',
         price: '',
         description: '',
+        image: '',
         slug: '',
         emoji: '🏷️',
         bg: 'rgba(193,163,106,0.1)',
         badge: 'New',
-        details: ['Premium quality', 'Sourced responsibly']
+        details: ['Premium quality', 'Sourced responsibly'],
+        reviews: []
       });
       fetchData();
     } catch (err) {
-      console.error('Failed to add product:', err);
+      console.error('Failed to save product:', err);
       setAddStatus('error');
+    }
+  };
+
+  const handleAddReview = async (productId: string) => {
+    try {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const updatedReviews = [...(product.reviews || []), newReview];
+      await updateDoc(doc(db, 'products', productId), {
+        reviews: updatedReviews
+      });
+
+      setProducts(prev => prev.map(p => p.id === productId ? { ...p, reviews: updatedReviews } : p));
+      setIsAddingReview(null);
+      setNewReview({ rating: 5, text: '', author: '' });
+    } catch (err) {
+      console.error('Failed to add review:', err);
+    }
+  };
+
+  const deleteProduct = async (productId: string) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'products', productId));
+      setProducts(prev => prev.filter(p => p.id !== productId));
+    } catch (err) {
+      console.error('Failed to delete product:', err);
     }
   };
 
@@ -332,26 +413,125 @@ export default function AdminDashboard() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {products.map(product => (
-                     <div key={product.id} className="glass-strong p-6 rounded-3xl border border-white/10 hover:border-[#C1A36A]/30 transition-colors">
+                     <div key={product.id} className="glass-strong p-6 rounded-3xl border border-white/10 hover:border-[#C1A36A]/30 transition-colors flex flex-col">
                         <div className="flex items-center gap-4 mb-4">
-                           <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-3xl">
-                              {product.emoji || '🏷️'}
+                           <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-3xl overflow-hidden">
+                              {product.image ? (
+                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                              ) : (
+                                product.emoji || '🏷️'
+                              )}
                            </div>
-                           <div>
-                              <h4 className="font-bold">{product.name}</h4>
+                           <div className="flex-1 min-w-0">
+                              <h4 className="font-bold truncate">{product.name}</h4>
                               <p className="text-xs text-white/40">{product.category}</p>
                            </div>
-                           <div className="ml-auto text-right">
+                           <div className="text-right">
                               <p className="font-bold text-[#C1A36A]">{product.price}</p>
                            </div>
                         </div>
                         <p className="text-xs text-white/60 line-clamp-2 mb-4 leading-relaxed">
                            {product.description}
                         </p>
-                        <div className="flex items-center justify-between py-4 border-t border-white/5">
-                           <span className="text-[10px] text-white/40 uppercase tracking-widest">STOCK: 45 units</span>
-                           <button className="text-xs text-[#C1A36A] hover:underline font-bold uppercase tracking-widest">Edit Details</button>
+
+                        {/* Reviews summary */}
+                        <div className="mb-4">
+                           <p className="text-[10px] text-white/40 uppercase tracking-widest mb-2 flex justify-between">
+                              Reviews ({product.reviews?.length || 0})
+                              <button 
+                                onClick={() => setIsAddingReview(product.id)}
+                                className="text-[#C1A36A] hover:underline"
+                              >
+                                + Add Review
+                              </button>
+                           </p>
+                           {product.reviews && product.reviews.length > 0 ? (
+                              <div className="space-y-2">
+                                 {product.reviews.slice(-2).map((r: ProductReview, idx: number) => (
+                                    <div key={idx} className="text-[10px] bg-white/5 p-2 rounded-lg border border-white/5">
+                                       <div className="flex justify-between font-bold mb-1">
+                                          <span>{r.author}</span>
+                                          <span className="text-[#C1A36A]">{'★'.repeat(r.rating)}</span>
+                                       </div>
+                                       <p className="text-white/40 italic truncate">&quot;{r.text}&quot;</p>
+                                    </div>
+                                 ))}
+                              </div>
+                           ) : (
+                              <p className="text-[10px] text-white/20 italic">No reviews yet.</p>
+                           )}
                         </div>
+
+                        <div className="mt-auto flex items-center justify-between py-4 border-t border-white/5 gap-2">
+                           <button 
+                             onClick={() => deleteProduct(product.id)}
+                             className="text-[10px] text-red-500/60 hover:text-red-500 font-bold uppercase tracking-widest px-2 py-1"
+                           >
+                             Delete
+                           </button>
+                           <button 
+                             onClick={() => handleEditProduct(product)}
+                             className="text-xs text-[#C1A36A] hover:bg-[#C1A36A]/10 px-4 py-2 rounded-lg font-bold uppercase tracking-widest transition-colors"
+                           >
+                             Edit Details
+                           </button>
+                        </div>
+
+                        {/* Inline Review Form */}
+                        <AnimatePresence>
+                           {isAddingReview === product.id && (
+                              <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="overflow-hidden"
+                              >
+                                 <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+                                    <input 
+                                       type="text" 
+                                       placeholder="Reviewer Name"
+                                       value={newReview.author}
+                                       onChange={e => setNewReview({...newReview, author: e.target.value})}
+                                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#C1A36A]/50"
+                                    />
+                                    <textarea 
+                                       placeholder="Review Text"
+                                       value={newReview.text}
+                                       onChange={e => setNewReview({...newReview, text: e.target.value})}
+                                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#C1A36A]/50 resize-none"
+                                       rows={2}
+                                    />
+                                    <div className="flex justify-between items-center">
+                                       <div className="flex gap-1">
+                                          {[1,2,3,4,5].map(star => (
+                                             <button 
+                                                key={star}
+                                                onClick={() => setNewReview({...newReview, rating: star})}
+                                                className={`text-xs ${newReview.rating >= star ? 'text-[#C1A36A]' : 'text-white/20'}`}
+                                             >
+                                                ★
+                                             </button>
+                                          ))}
+                                       </div>
+                                       <div className="flex gap-2">
+                                          <button 
+                                             onClick={() => setIsAddingReview(null)}
+                                             className="text-[10px] text-white/40 font-bold uppercase"
+                                          >
+                                             Cancel
+                                          </button>
+                                          <button 
+                                             onClick={() => handleAddReview(product.id)}
+                                             className="text-[10px] bg-[#C1A36A] text-black px-3 py-1 rounded-lg font-bold uppercase"
+                                          >
+                                             Save
+                                          </button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </motion.div>
+                           )}
+                        </AnimatePresence>
                      </div>
                   ))}
                </div>
@@ -360,7 +540,7 @@ export default function AdminDashboard() {
         </AnimatePresence>
       </main>
 
-      {/* Add Product Modal */}
+      {/* Add/Edit Product Modal */}
       <AnimatePresence>
          {isAddingProduct && (
             <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
@@ -368,17 +548,22 @@ export default function AdminDashboard() {
                  initial={{ opacity: 0 }}
                  animate={{ opacity: 1 }}
                  exit={{ opacity: 0 }}
-                 onClick={() => setIsAddingProduct(false)}
+                 onClick={() => {
+                    setIsAddingProduct(false);
+                    setEditingProductId(null);
+                 }}
                  className="absolute inset-0 bg-black/80 backdrop-blur-md"
                />
                <motion.div
                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
                  animate={{ opacity: 1, scale: 1, y: 0 }}
                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                 className="relative w-full max-w-2xl glass-strong border border-white/10 rounded-[32px] p-8 md:p-12"
+                 className="relative w-full max-w-2xl glass-strong border border-white/10 rounded-[32px] p-8 md:p-12 max-h-[90vh] overflow-y-auto"
                >
-                  <h2 className="text-3xl font-[family-name:var(--font-playfair)] mb-8">Add New Piece</h2>
-                  <form onSubmit={handleAddProduct} className="space-y-6">
+                  <h2 className="text-3xl font-[family-name:var(--font-playfair)] mb-8">
+                     {editingProductId ? 'Edit Product' : 'Add New Piece'}
+                  </h2>
+                  <form onSubmit={handleSaveProduct} className="space-y-6">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                            <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Product Name</label>
@@ -422,6 +607,41 @@ export default function AdminDashboard() {
                               className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50" 
                            />
                         </div>
+                        <div className="space-y-2 md:col-span-2">
+                           <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Image URL</label>
+                           <div className="relative">
+                              <input 
+                                 type="url" 
+                                 value={newProduct.image}
+                                 onChange={e => setNewProduct({...newProduct, image: e.target.value})}
+                                 placeholder="https://images.unsplash.com/..."
+                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50 pr-12" 
+                              />
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20">
+                                 <ImageIcon size={18} />
+                              </div>
+                           </div>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Slug (optional)</label>
+                           <input 
+                              type="text" 
+                              value={newProduct.slug}
+                              onChange={e => setNewProduct({...newProduct, slug: e.target.value})}
+                              placeholder="pure-teff-grain"
+                              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50" 
+                           />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Badge</label>
+                           <input 
+                              type="text" 
+                              value={newProduct.badge}
+                              onChange={e => setNewProduct({...newProduct, badge: e.target.value})}
+                              placeholder="New"
+                              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-[#C1A36A]/50" 
+                           />
+                        </div>
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] uppercase tracking-widest text-[#C1A36A]">Description</label>
@@ -457,12 +677,15 @@ export default function AdminDashboard() {
                            }`}
                         >
                            {addStatus === 'saving' ? <Loader2 className="animate-spin mx-auto" size={18} /> : 
-                            addStatus === 'success' ? 'Product Added!' : 
-                            addStatus === 'error' ? 'Failed to Add' : 'Publish Product'}
+                            addStatus === 'success' ? (editingProductId ? 'Updated!' : 'Product Added!') : 
+                            addStatus === 'error' ? 'Failed to Save' : (editingProductId ? 'Save Changes' : 'Publish Product')}
                         </button>
                         <button 
                            type="button"
-                           onClick={() => setIsAddingProduct(false)}
+                           onClick={() => {
+                              setIsAddingProduct(false);
+                              setEditingProductId(null);
+                           }}
                            className="px-8 py-4 border border-white/10 rounded-2xl text-sm font-bold tracking-widest uppercase hover:bg-white/5 transition-all duration-300"
                         >
                            Cancel
