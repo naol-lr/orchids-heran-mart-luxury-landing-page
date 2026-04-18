@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { Product } from '@/data/products';
 import Navbar from '@/components/Navbar';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Plus, Minus, ShoppingBag, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 
 export default function ProductPage() {
   const params = useParams();
@@ -20,6 +21,12 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
+  const { user, userData, setIsModalOpen, setIsLoginView } = useAuth();
+  
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     if (!db) {
@@ -69,6 +76,40 @@ export default function ProductPage() {
 
   const increment = () => setQuantity((q) => q + 1);
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !product || !product.id || !db) {
+      if (!user) {
+        setIsLoginView(true);
+        setIsModalOpen(true);
+      }
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    try {
+      const newReview = {
+        author: userData?.name || user.displayName || 'Anonymous User',
+        rating: reviewRating,
+        text: reviewText
+      };
+
+      const updatedReviews = [...(product.reviews || []), newReview];
+      await updateDoc(doc(db, 'products', product.id), {
+        reviews: updatedReviews
+      });
+
+      setProduct({ ...product, reviews: updatedReviews });
+      setReviewText('');
+      setReviewRating(5);
+      setShowReviewForm(false);
+    } catch (err) {
+      console.error('Failed to submit review:', err);
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   // Default values for missing properties
   const details = product.details || [];
@@ -203,10 +244,76 @@ export default function ProductPage() {
         </div>
 
         {/* Reviews Section */}
-        {reviews.length > 0 && (
-          <div className="mt-20">
+        <div className="mt-20">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+            <button
+              onClick={() => {
+                if (!user) {
+                  setIsLoginView(true);
+                  setIsModalOpen(true);
+                } else {
+                  setShowReviewForm(!showReviewForm);
+                }
+              }}
+              className="rounded-xl border border-[#C1A36A] px-6 py-2 text-sm font-medium text-[#C1A36A] transition-colors hover:bg-[#C1A36A] hover:text-black"
+            >
+              {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showReviewForm && (
+              <motion.form
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-6 overflow-hidden rounded-2xl border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.05)] p-6"
+                onSubmit={handleSubmitReview}
+              >
+                <h3 className="mb-4 text-lg font-medium text-white">Share your experience</h3>
+                <div className="mb-4">
+                  <label className="mb-2 block text-sm text-[rgba(245,245,245,0.6)]">Your Rating</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        className={`transition-colors ${
+                          reviewRating >= star ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'
+                        }`}
+                      >
+                        <Star fill="currentColor" size={24} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <label className="mb-2 block text-sm text-[rgba(245,245,245,0.6)]">Your Review</label>
+                  <textarea
+                    required
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                    placeholder="Tell us what you loved about this product..."
+                    rows={4}
+                    className="w-full rounded-xl border border-[rgba(245,245,245,0.1)] bg-[rgba(26,26,26,0.7)] px-4 py-3 text-sm text-white placeholder-[rgba(245,245,245,0.3)] focus:border-[#C1A36A] focus:outline-none focus:ring-1 focus:ring-[#C1A36A]"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview}
+                  className="flex items-center justify-center rounded-xl bg-[#C1A36A] px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-white disabled:opacity-70"
+                >
+                  {isSubmittingReview ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Submit Review
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {reviews.length > 0 ? (
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                 {reviews.map((review, i: number) => (
                     <motion.div 
                       key={i} 
@@ -226,8 +333,10 @@ export default function ProductPage() {
                     </motion.div>
                 ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="mt-8 text-[rgba(245,245,245,0.5)]">No reviews yet. Be the first to review this product!</p>
+          )}
+        </div>
       </div>
     </div>
   );
