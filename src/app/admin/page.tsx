@@ -42,6 +42,7 @@ interface Order {
   total: number;
   status: string;
   createdAt: Date;
+  items?: Array<{ name: string; quantity: number }>;
 }
 
 export default function AdminDashboard() {
@@ -322,6 +323,7 @@ export default function AdminDashboard() {
                     <thead>
                        <tr className="bg-white/5 border-b border-white/10">
                           <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Order</th>
+                          <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Items</th>
                           <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Customer</th>
                           <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Amount</th>
                           <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Status</th>
@@ -334,6 +336,19 @@ export default function AdminDashboard() {
                              <td className="px-6 py-6">
                                 <p className="font-bold text-sm mb-1">#{order.id.slice(-6).toUpperCase()}</p>
                                 <p className="text-[10px] text-white/40">{order.createdAt.toLocaleDateString()}</p>
+                             </td>
+                             <td className="px-6 py-6">
+                                {order.items && order.items.length > 0 ? (
+                                   <div className="flex flex-col gap-1">
+                                      {order.items.map((item, i) => (
+                                         <span key={i} className="text-xs text-white/70">
+                                            {item.quantity}x {item.name}
+                                         </span>
+                                      ))}
+                                   </div>
+                                ) : (
+                                   <span className="text-xs text-white/30 italic">No items</span>
+                                )}
                              </td>
                              <td className="px-6 py-6">
                                 <p className="text-sm font-medium">{order.userName}</p>

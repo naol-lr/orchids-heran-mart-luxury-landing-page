@@ -61,12 +61,16 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      if (db) {
-        await addDoc(collection(db, "messages"), {
-          ...form,
-          createdAt: serverTimestamp(),
-        });
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to send message');
       }
+
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 4000);
       setForm({ name: "", email: "", message: "" });
