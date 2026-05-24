@@ -259,10 +259,9 @@ export default function ContactPage() {
             initial={{ opacity: 0, x: 40 }}
             animate={infoInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="rounded-3xl overflow-hidden relative"
+            className="rounded-3xl overflow-hidden relative min-h-[280px] sm:min-h-[400px]"
             style={{
               border: "1px solid rgba(193,163,106,0.15)",
-              minHeight: 400,
               background: "rgba(26,26,26,0.7)",
             }}
           >
@@ -273,8 +272,8 @@ export default function ContactPage() {
               style={{
                 border: 0,
                 filter: "invert(92%) hue-rotate(180deg) saturate(0.6) brightness(0.85)",
-                minHeight: 400,
               }}
+              className="min-h-[280px] sm:min-h-[400px]"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

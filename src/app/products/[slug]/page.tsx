@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { Product } from '@/data/products';
+import { products as defaultProducts, Product } from '@/data/products';
 import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Plus, Minus, ShoppingBag, Check, Loader2 } from 'lucide-react';
@@ -27,21 +27,53 @@ export default function ProductPage() {
   const [reviewRating, setReviewRating] = useState(5);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [guestName, setGuestName] = useState('');
 
   useEffect(() => {
-    if (!db) {
-      setLoading(false);
-      return;
-    }
-
     const fetchProduct = async () => {
       try {
-        const q = query(collection(db, 'products'), where('slug', '==', slug));
-        const querySnapshot = await getDocs(q);
+        let currentProduct: Product | null = null;
+
+        if (db) {
+          try {
+            const q = query(collection(db, 'products'), where('slug', '==', slug));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+              const docRef = querySnapshot.docs[0];
+              currentProduct = { id: docRef.id, ...docRef.data() } as Product;
+            }
+          } catch (dbErr) {
+            console.warn("Firestore fetch product failed, using local products:", dbErr);
+          }
+        }
         
-        if (!querySnapshot.empty) {
-          const docRef = querySnapshot.docs[0];
-          setProduct({ id: docRef.id, ...docRef.data() } as Product);
+        // Fallback to local products list if db is not present or product not found in firestore
+        if (!currentProduct) {
+          const found = defaultProducts.find((p) => p.slug === slug);
+          if (found) {
+            currentProduct = JSON.parse(JSON.stringify(found)) as Product;
+          }
+        }
+
+        if (currentProduct) {
+          // Merge local reviews from localStorage
+          const localReviewsKey = `custom_reviews_${slug}`;
+          const localReviews = JSON.parse(localStorage.getItem(localReviewsKey) || '[]');
+          if (localReviews.length > 0) {
+            const existingReviews = currentProduct.reviews || [];
+            // De-duplicate reviews just in case
+            const existingReviewKeys = new Set(existingReviews.map(r => `${r.author}:${r.text}`));
+            const mergedReviews = [...existingReviews];
+            for (const r of localReviews) {
+              const key = `${r.author}:${r.text}`;
+              if (!existingReviewKeys.has(key)) {
+                mergedReviews.push(r);
+              }
+            }
+            currentProduct.reviews = mergedReviews;
+          }
+          setProduct(currentProduct);
         }
       } catch (error) {
         console.error("Error fetching product: ", error);
@@ -80,37 +112,50 @@ export default function ProductPage() {
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !product || !product.id || !db) {
-      if (!user) {
-        setIsLoginView(true);
-        setIsModalOpen(true);
-      }
-      return;
-    }
+    if (!product) return;
 
     setIsSubmittingReview(true);
     try {
+      const authorName = user
+        ? (userData?.name || user.displayName || 'Anonymous User')
+        : (guestName.trim() || 'Guest Customer');
+
       const newReview = {
-        author: userData?.name || user.displayName || 'Anonymous User',
+        author: authorName,
         rating: reviewRating,
         text: reviewText
       };
 
-      const res = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id, review: newReview })
-      });
+      // Save to localStorage so it is functional client-side immediately
+      const localReviewsKey = `custom_reviews_${slug}`;
+      const localReviews = JSON.parse(localStorage.getItem(localReviewsKey) || '[]');
+      localReviews.push(newReview);
+      localStorage.setItem(localReviewsKey, JSON.stringify(localReviews));
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to submit review');
+      // Attempt to send to database if possible
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            productId: product.id || product.slug, 
+            review: newReview 
+          })
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.warn('API review submission returned error (falling back to local):', errorData.error);
+        }
+      } catch (apiErr) {
+        console.warn('API review submission failed (falling back to local):', apiErr);
       }
 
       const updatedReviews = [...(product.reviews || []), newReview];
       setProduct({ ...product, reviews: updatedReviews });
       setReviewText('');
       setReviewRating(5);
+      setGuestName('');
       setShowReviewForm(false);
     } catch (err) {
       console.error('Failed to submit review:', err);
@@ -179,7 +224,7 @@ export default function ProductPage() {
                 &larr; Back to Shop
               </Link>
               <h1
-                className="font-[family-name:var(--font-playfair)] text-4xl font-bold leading-tight lg:text-5xl"
+                className="font-[family-name:var(--font-playfair)] text-3xl md:text-4xl font-bold leading-tight lg:text-5xl"
                 style={{ color: '#F5F5F5' }}
               >
                 {product.name}
@@ -219,8 +264,8 @@ export default function ProductPage() {
             )}
             
             {/* Add to Cart Section */}
-            <div className="mt-10 flex items-center gap-4">
-              <div className="flex items-center rounded-xl border border-[rgba(193,163,106,0.2)]">
+            <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              <div className="flex items-center justify-center rounded-xl border border-[rgba(193,163,106,0.2)]">
                 <button onClick={decrement} className="p-3 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white">
                   <Minus size={16} />
                 </button>
@@ -256,14 +301,7 @@ export default function ProductPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
             <button
-              onClick={() => {
-                if (!user) {
-                  setIsLoginView(true);
-                  setIsModalOpen(true);
-                } else {
-                  setShowReviewForm(!showReviewForm);
-                }
-              }}
+              onClick={() => setShowReviewForm(!showReviewForm)}
               className="rounded-xl border border-[#C1A36A] px-6 py-2 text-sm font-medium text-[#C1A36A] transition-colors hover:bg-[#C1A36A] hover:text-black"
             >
               {showReviewForm ? 'Cancel Review' : 'Write a Review'}
@@ -280,6 +318,20 @@ export default function ProductPage() {
                 onSubmit={handleSubmitReview}
               >
                 <h3 className="mb-4 text-lg font-medium text-white">Share your experience</h3>
+                
+                {!user && (
+                  <div className="mb-4">
+                    <label className="mb-2 block text-sm text-[rgba(245,245,245,0.6)]">Your Name</label>
+                    <input
+                      required
+                      type="text"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      placeholder="e.g. Sarah M."
+                      className="w-full rounded-xl border border-[rgba(245,245,245,0.1)] bg-[rgba(26,26,26,0.7)] px-4 py-3 text-sm text-white placeholder-[rgba(245,245,245,0.3)] focus:border-[#C1A36A] focus:outline-none focus:ring-1 focus:ring-[#C1A36A]"
+                    />
+                  </div>
+                )}
                 <div className="mb-4">
                   <label className="mb-2 block text-sm text-[rgba(245,245,245,0.6)]">Your Rating</label>
                   <div className="flex gap-2">

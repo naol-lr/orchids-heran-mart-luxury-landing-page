@@ -29,15 +29,19 @@ export default function CartPage() {
 
     setIsPlacingOrder(true);
     try {
-      await addDoc(collection(db, 'orders'), {
-        userId: user.uid,
-        userName: userData?.name || user.displayName || 'Guest',
-        userEmail: user.email,
-        items: cartItems,
-        total: subtotal,
-        status: 'pending',
-        createdAt: serverTimestamp(),
-      });
+      if (db) {
+        await addDoc(collection(db, 'orders'), {
+          userId: user.uid,
+          userName: userData?.name || user.displayName || 'Guest',
+          userEmail: user.email,
+          items: cartItems,
+          total: subtotal,
+          status: 'pending',
+          createdAt: serverTimestamp(),
+        });
+      } else {
+        console.warn("Firestore db is not configured. Proceeding with simulated order placement.");
+      }
 
       setOrderPlaced(true);
       clearCart();
@@ -84,8 +88,8 @@ export default function CartPage() {
       <Navbar />
       <div className="mx-auto max-w-4xl px-6 pt-32 pb-24">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <div className="flex items-baseline justify-between">
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl font-bold text-white">Your Cart</h1>
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+            <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl font-bold text-white">Your Cart</h1>
             <Link href="/shop" className="text-sm text-[rgba(193,163,106,0.6)] hover:text-[#C1A36A]">
               &larr; Back to Shop
             </Link>
@@ -102,17 +106,17 @@ export default function CartPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex items-center justify-between gap-6 rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.5)] p-4 backdrop-blur-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-lg" style={{background: item.bg}}>
-                            <span className="text-3xl font-[family-name:var(--font-playfair)] italic font-light opacity-80 text-[#C1A36A]">{item.name.charAt(0)}</span>
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[rgba(193,163,106,0.15)] bg-[rgba(26,26,26,0.5)] p-4 backdrop-blur-sm">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-lg shrink-0" style={{background: item.bg}}>
+                            <span className="text-2xl sm:text-3xl font-[family-name:var(--font-playfair)] italic font-light opacity-80 text-[#C1A36A]">{item.name.charAt(0)}</span>
                         </div>
-                        <div>
-                          <p className="font-semibold text-white">{item.name}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-white truncate">{item.name}</p>
                           <p className="text-sm text-[rgba(245,245,245,0.4)]">{item.price}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
                         <div className="flex items-center rounded-lg border border-[rgba(193,163,106,0.2)]">
                           <button onClick={() => updateQuantity(item.slug, item.quantity - 1)} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Minus size={14} /></button>
                           <span className="w-8 text-center text-sm font-medium text-white">{item.quantity}</span>

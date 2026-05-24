@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import ProductGrid from '@/components/ProductGrid';
-import { Product } from '@/data/products';
+import { products as defaultProducts, Product } from '@/data/products';
 import { Search, X, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -25,19 +25,30 @@ export default function ShopPage() {
   const [activePriceRange, setActivePriceRange] = useState(priceRanges[0]);
 
   useEffect(() => {
-    if (!db) {
-      setLoading(false);
-      return;
-    }
-
     const fetchProducts = async () => {
       try {
-        const q = query(collection(db, 'products'));
-        const querySnapshot = await getDocs(q);
-        const productsData = querySnapshot.docs.map(doc => doc.data() as Product);
+        let productsData: Product[] = [];
+        if (db) {
+          try {
+            const q = query(collection(db, 'products'));
+            const querySnapshot = await getDocs(q);
+            productsData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }) as Product);
+          } catch (dbErr) {
+            console.warn("Firestore fetch products failed, using local products:", dbErr);
+          }
+        }
+
+        if (productsData.length === 0) {
+          productsData = defaultProducts;
+        }
+
         setProducts(productsData);
       } catch (error) {
         console.error("Error fetching products: ", error);
+        setProducts(defaultProducts);
       } finally {
         setLoading(false);
       }
