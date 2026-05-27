@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSound } from '@/context/SoundContext';
 
 interface HeroIntroProps {
   onComplete: () => void;
@@ -13,6 +14,7 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
   const [phase, setPhase] = useState<'floating' | 'clicked' | 'welcome' | 'rising' | 'done'>('floating');
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const { playClick, playWelcome, initAudio } = useSound();
 
   useEffect(() => {
     setIsMounted(true);
@@ -31,8 +33,10 @@ export default function HeroIntro({ onComplete }: HeroIntroProps) {
       setTimeout(() => setRipples((prev) => prev.filter((r) => r.id !== id)), 1000);
 
       setPhase('clicked');
+      initAudio();
+      playClick();
 
-      setTimeout(() => setPhase('welcome'), 300);
+      setTimeout(() => { setPhase('welcome'); playWelcome(); }, 300);
       setTimeout(() => setPhase('rising'), 1400);
       setTimeout(() => {
         setPhase('done');

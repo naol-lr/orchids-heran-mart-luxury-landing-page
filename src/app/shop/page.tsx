@@ -8,12 +8,14 @@ import { products as defaultProducts, Product } from '@/data/products';
 import { Search, X, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
+import { useSound } from '@/context/SoundContext';
 
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const { playClick, playHover } = useSound();
   
   const priceRanges = [
     { label: 'All', min: 0, max: Infinity },
@@ -123,7 +125,7 @@ export default function ShopPage() {
               className="h-full w-full rounded-lg border border-[rgba(193,163,106,0.2)] bg-transparent py-3 pl-11 pr-4 text-sm text-white outline-none focus:ring-1 focus:ring-[rgba(193,163,106,0.5)]"
             />
             {searchTerm && (
-              <button onClick={() => setSearchTerm('')} className="absolute top-1/2 right-4 -translate-y-1/2">
+              <button onClick={() => { playClick(); setSearchTerm(''); }} onMouseEnter={playHover} className="absolute top-1/2 right-4 -translate-y-1/2">
                 <X size={16} className="text-[rgba(245,245,245,0.3)]" />
               </button>
             )}
@@ -137,7 +139,8 @@ export default function ShopPage() {
               {categories.map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setActiveCategory(cat)}
+                  onClick={() => { playClick(); setActiveCategory(cat); }}
+                  onMouseEnter={playHover}
                   className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activeCategory === cat ? 'bg-[rgba(193,163,106,0.25)] text-[#C1A36A]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
                   {cat}
                 </button>
@@ -150,7 +153,8 @@ export default function ShopPage() {
               {priceRanges.map((range) => (
                 <button
                   key={range.label}
-                  onClick={() => setActivePriceRange(range)}
+                  onClick={() => { playClick(); setActivePriceRange(range); }}
+                  onMouseEnter={playHover}
                   className={`rounded-full px-3 py-1 text-xs transition-colors duration-200 ${activePriceRange.label === range.label ? 'bg-[rgba(193,163,106,0.25)] text-[#C1A36A]' : 'bg-[rgba(255,255,255,0.05)] text-[rgba(245,245,245,0.5)] hover:bg-[rgba(255,255,255,0.1)]'}`}>
                   {range.label}
                 </button>

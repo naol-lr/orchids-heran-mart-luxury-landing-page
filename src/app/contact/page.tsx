@@ -177,10 +177,10 @@ export default function ContactPage() {
             animate={infoInView ? { 
               opacity: 1, 
               x: 0,
-              borderColor: isOpen ? "rgba(74, 222, 128, 0.4)" : "rgba(193, 163, 106, 0.25)",
+              borderColor: isOpen ? "rgba(74, 222, 128, 0.5)" : "rgba(239, 68, 68, 0.45)",
               boxShadow: isOpen 
-                ? "0 0 40px rgba(74, 222, 128, 0.12), 0 8px 32px rgba(0, 0, 0, 0.5)" 
-                : "0 0 40px rgba(193, 163, 106, 0.05), 0 8px 32px rgba(0, 0, 0, 0.5)"
+                ? "0 0 50px rgba(74, 222, 128, 0.15), 0 0 100px rgba(74, 222, 128, 0.05), 0 8px 32px rgba(0, 0, 0, 0.5)" 
+                : "0 0 50px rgba(239, 68, 68, 0.12), 0 0 100px rgba(239, 68, 68, 0.04), 0 8px 32px rgba(0, 0, 0, 0.5)"
             } : {}}
             transition={{ duration: 0.7 }}
             className="rounded-3xl p-8"

@@ -9,6 +9,7 @@ import { Star, Plus, Minus, ShoppingBag, Check, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useSound } from '@/context/SoundContext';
 import { db } from '@/lib/firebase/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, setDoc } from 'firebase/firestore';
 
@@ -22,6 +23,7 @@ export default function ProductPage() {
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
   const { user, userData, setIsModalOpen, setIsLoginView } = useAuth();
+  const { playClick, playHover } = useSound();
   
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
@@ -101,14 +103,15 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if(product) {
+        playClick();
         addToCart(product, quantity);
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
     }
   }
 
-  const increment = () => setQuantity((q) => q + 1);
-  const decrement = () => setQuantity((q) => Math.max(1, q - 1));
+  const increment = () => { playClick(); setQuantity((q) => q + 1); };
+  const decrement = () => { playClick(); setQuantity((q) => Math.max(1, q - 1)); };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -281,16 +284,17 @@ export default function ProductPage() {
             {/* Add to Cart Section */}
             <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="flex items-center justify-center rounded-xl border border-[rgba(193,163,106,0.2)]">
-                <button onClick={decrement} className="p-3 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white">
+                <button onClick={decrement} onMouseEnter={playHover} className="p-3 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white">
                   <Minus size={16} />
                 </button>
                 <span className="w-10 text-center text-lg font-medium text-white">{quantity}</span>
-                <button onClick={increment} className="p-3 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white">
+                <button onClick={increment} onMouseEnter={playHover} className="p-3 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white">
                   <Plus size={16} />
                 </button>
               </div>
               <motion.button
                 onClick={handleAddToCart}
+                onMouseEnter={playHover}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-medium uppercase tracking-wider"
@@ -316,7 +320,8 @@ export default function ProductPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-bold text-[#F5F5F5] lg:text-3xl">Customer Reviews</h2>
             <button
-              onClick={() => setShowReviewForm(!showReviewForm)}
+              onClick={() => { playClick(); setShowReviewForm(!showReviewForm); }}
+              onMouseEnter={playHover}
               className="rounded-xl border border-[#C1A36A] px-6 py-2 text-sm font-medium text-[#C1A36A] transition-colors hover:bg-[#C1A36A] hover:text-black"
             >
               {showReviewForm ? 'Cancel Review' : 'Write a Review'}
@@ -354,7 +359,8 @@ export default function ProductPage() {
                       <button
                         key={star}
                         type="button"
-                        onClick={() => setReviewRating(star)}
+                        onClick={() => { playClick(); setReviewRating(star); }}
+                        onMouseEnter={playHover}
                         className={`transition-colors ${
                           reviewRating >= star ? 'text-[#C1A36A]' : 'text-[rgba(245,245,245,0.2)]'
                         }`}

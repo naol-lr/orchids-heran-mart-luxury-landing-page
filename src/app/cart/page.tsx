@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useSound } from '@/context/SoundContext';
 import { db } from '@/lib/firebase/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Plus, Minus, Trash2, ShoppingBag, CheckCircle, PackageCheck, Loader2 } from 'lucide-react';
@@ -13,6 +14,7 @@ import { Plus, Minus, Trash2, ShoppingBag, CheckCircle, PackageCheck, Loader2 } 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
   const { user, userData, setIsModalOpen } = useAuth();
+  const { playClick, playHover } = useSound();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
@@ -118,11 +120,11 @@ export default function CartPage() {
                       </div>
                       <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6">
                         <div className="flex items-center rounded-lg border border-[rgba(193,163,106,0.2)]">
-                          <button onClick={() => updateQuantity(item.slug, item.quantity - 1)} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Minus size={14} /></button>
+                          <button onClick={() => { playClick(); updateQuantity(item.slug, item.quantity - 1); }} onMouseEnter={playHover} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Minus size={14} /></button>
                           <span className="w-8 text-center text-sm font-medium text-white">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.slug, item.quantity + 1)} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Plus size={14} /></button>
+                          <button onClick={() => { playClick(); updateQuantity(item.slug, item.quantity + 1); }} onMouseEnter={playHover} className="p-2 text-[rgba(245,245,245,0.5)] transition-colors hover:text-white"><Plus size={14} /></button>
                         </div>
-                        <button onClick={() => removeFromCart(item.slug)} className="text-[rgba(245,245,245,0.4)] hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                        <button onClick={() => { playClick(); removeFromCart(item.slug); }} onMouseEnter={playHover} className="text-[rgba(245,245,245,0.4)] hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
                       </div>
                     </motion.li>
                   ))}
@@ -135,7 +137,8 @@ export default function CartPage() {
                     </div>
                     <p className="mt-2 text-xs text-center text-[rgba(245,245,245,0.4)]">Final price will be confirmed at the store.</p>
                     <motion.button
-                        onClick={handlePlaceOrder}
+                        onClick={() => { playClick(); handlePlaceOrder(); }}
+                        onMouseEnter={playHover}
                         disabled={isPlacingOrder}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}

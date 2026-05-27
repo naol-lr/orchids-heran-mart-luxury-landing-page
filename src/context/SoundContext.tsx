@@ -2,6 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
+export const themesList = [
+  "Golden Hour",
+  "Midnight Lounge",
+  "Astral Shimmer",
+  "Oasis Breeze",
+  "Cosmic Horizon"
+];
+
 interface SoundContextType {
   initAudio: () => void;
   playClick: () => void;
@@ -12,6 +20,8 @@ interface SoundContextType {
   musicVolume: number;
   setMusicVolume: (vol: number) => void;
   isAudioInitialized: boolean;
+  soundTheme: number;
+  setSoundTheme: (theme: number) => void;
 }
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
@@ -21,9 +31,10 @@ class WebAudioSynth {
   isMuted: boolean = false;
   musicVolume: number = 0.15;
   sfxVolume: number = 0.35;
+  activeTheme: number = 0;
   ambientGain: GainNode | null = null;
   seqInterval: NodeJS.Timeout | null = null;
-  activeOscillators: { osc: OscillatorNode; lfo?: OscillatorNode }[] = [];
+  activeOscillators: { osc: OscillatorNode; lfo?: OscillatorNode; gain: GainNode }[] = [];
 
   constructor() {}
 
@@ -55,6 +66,15 @@ class WebAudioSynth {
     this.musicVolume = vol;
     if (this.ctx && this.ambientGain && !this.isMuted) {
       this.ambientGain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.2);
+    }
+  }
+
+  setSoundTheme(theme: number) {
+    this.activeTheme = theme;
+    if (this.ctx && this.ambientGain) {
+      // Transition immediately: fade out current voices and trigger new theme
+      this.stopAll();
+      this.startAmbientDrone();
     }
   }
 
@@ -165,13 +185,22 @@ class WebAudioSynth {
   private startAmbientDrone() {
     if (!this.ctx || !this.ambientGain) return;
 
-    // Meditative corporate luxury pad chord loops
-    // Dmaj9 -> Bm9 -> Gmaj9 -> A6sus4
+    // Smooth transition into music volume
+    const now = this.ctx.currentTime;
+    this.ambientGain.gain.linearRampToValueAtTime(this.musicVolume, now + 1.2);
+
+    // Dynamic progressions list matching the 5 themes
     const progressions = [
+      // 0: Golden Hour (Warm Pentatonic Major)
       [146.83, 220.00, 277.18, 369.99, 440.00], // Dmaj9
-      [123.47, 185.00, 246.94, 277.18, 369.99], // Bm9
-      [98.00, 146.83, 196.00, 246.94, 293.66],  // Gmaj9
-      [110.00, 164.81, 220.00, 293.66, 369.99]  // A6sus4
+      // 1: Midnight Lounge (Deep mysterious jazz chords)
+      [82.41, 164.81, 196.00, 246.94, 293.66],  // Em9
+      // 2: Astral Shimmer (Crystalline higher bells)
+      [261.63, 329.63, 392.00, 493.88, 587.33], // Cmaj9
+      // 3: Oasis Breeze (Tropical warm major vibes)
+      [110.00, 220.00, 277.18, 329.63, 415.30], // Amaj9
+      // 4: Cosmic Horizon (Analog cinematic deep drones)
+      [87.31, 174.61, 261.63, 329.63, 392.00]   // Fmaj9
     ];
 
     let chordIdx = 0;
@@ -179,54 +208,90 @@ class WebAudioSynth {
 
     const triggerNextChord = () => {
       if (!this.ctx || !this.ambientGain || this.isMuted) return;
-      const now = this.ctx.currentTime;
-      const chord = progressions[chordIdx];
+      const currentNow = this.ctx.currentTime;
+      const chord = progressions[this.activeTheme];
 
-      chord.forEach((freq) => {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const filter = this.ctx.createBiquadFilter();
+      // Define synthesizer characteristics based on selected theme
+      let oscType: OscillatorType = 'sine';
+      let lfoFreq = 0.08;
+      let lfoDepth = 1.8;
+      let filterCutoffStart = 240;
+      let filterCutoffPeak = 580;
+      let filterQ = 1;
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now);
+      if (this.activeTheme === 1) { // Midnight Lounge
+        oscType = 'triangle';
+        lfoFreq = 0.05;
+        lfoDepth = 2.5;
+        filterCutoffStart = 160;
+        filterCutoffPeak = 410;
+      } else if (this.activeTheme === 2) { // Astral Shimmer
+        oscType = 'sine';
+        lfoFreq = 0.22; // Faster shimmer frequency
+        lfoDepth = 3.5;
+        filterCutoffStart = 450;
+        filterCutoffPeak = 1100;
+        filterQ = 3;
+      } else if (this.activeTheme === 3) { // Oasis Breeze
+        oscType = 'triangle';
+        lfoFreq = 0.12;
+        lfoDepth = 1.2;
+        filterCutoffStart = 280;
+        filterCutoffPeak = 620;
+      } else if (this.activeTheme === 4) { // Cosmic Horizon
+        oscType = 'triangle'; // Detuned triangle sounds like clean analog saw
+        lfoFreq = 0.04;
+        lfoDepth = 4.0;
+        filterCutoffStart = 120;
+        filterCutoffPeak = 850;
+      }
 
-        // High frequency detune oscillator (LFO module)
-        const lfo = this.ctx.createOscillator();
-        const lfoGain = this.ctx.createGain();
-        lfo.frequency.value = 0.08 + Math.random() * 0.06;
-        lfoGain.gain.value = 1.8;
+      chord.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        const filter = this.ctx!.createBiquadFilter();
+
+        osc.type = oscType;
+        // Pitch drift slightly for stereo widening chorus feel
+        const pitchVariance = (idx - 2) * 0.4;
+        osc.frequency.setValueAtTime(freq + pitchVariance, currentNow);
+
+        // LFO Module
+        const lfo = this.ctx!.createOscillator();
+        const lfoGain = this.ctx!.createGain();
+        lfo.frequency.value = lfoFreq + Math.random() * 0.05;
+        lfoGain.gain.value = lfoDepth;
 
         lfo.connect(lfoGain);
         lfoGain.connect(osc.frequency);
 
         // Lowpass sweep
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(240 + Math.random() * 60, now);
-        filter.frequency.exponentialRampToValueAtTime(580 + Math.random() * 120, now + chordDuration / 2);
-        filter.frequency.exponentialRampToValueAtTime(200 + Math.random() * 30, now + chordDuration);
+        filter.Q.value = filterQ;
+        filter.frequency.setValueAtTime(filterCutoffStart + Math.random() * 50, currentNow);
+        filter.frequency.exponentialRampToValueAtTime(filterCutoffPeak + Math.random() * 100, currentNow + chordDuration / 2);
+        filter.frequency.exponentialRampToValueAtTime(filterCutoffStart - 40, currentNow + chordDuration);
 
         // Smooth volume envelope
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.07, now + 2.5); // Warm attack
-        gain.gain.setValueAtTime(0.07, now + chordDuration - 2.5);
-        gain.gain.linearRampToValueAtTime(0.001, now + chordDuration); // Release
+        gain.gain.setValueAtTime(0, currentNow);
+        gain.gain.linearRampToValueAtTime(0.06, currentNow + 2.5); // Attack
+        gain.gain.setValueAtTime(0.06, currentNow + chordDuration - 2.5);
+        gain.gain.linearRampToValueAtTime(0.001, currentNow + chordDuration); // Release
 
         osc.connect(filter);
         filter.connect(gain);
         gain.connect(this.ambientGain!);
 
-        lfo.start(now);
-        osc.start(now);
+        lfo.start(currentNow);
+        osc.start(currentNow);
 
-        lfo.stop(now + chordDuration + 0.2);
-        osc.stop(now + chordDuration + 0.2);
+        lfo.stop(currentNow + chordDuration + 0.2);
+        osc.stop(currentNow + chordDuration + 0.2);
 
-        this.activeOscillators.push({ osc, lfo });
+        this.activeOscillators.push({ osc, lfo, gain });
       });
 
-      // Gradually drift up music volume Master Gain node
-      this.ambientGain.gain.linearRampToValueAtTime(this.musicVolume, now + 1.0);
-      chordIdx = (chordIdx + 1) % progressions.length;
+      chordIdx = (chordIdx + 1) % 4;
     };
 
     triggerNextChord();
@@ -236,11 +301,21 @@ class WebAudioSynth {
   stopAll() {
     if (this.seqInterval) {
       clearInterval(this.seqInterval);
+      this.seqInterval = null;
     }
-    this.activeOscillators.forEach(({ osc, lfo }) => {
+    const now = this.ctx ? this.ctx.currentTime : 0;
+    this.activeOscillators.forEach(({ osc, lfo, gain }) => {
       try {
-        osc.stop();
-        lfo?.stop();
+        if (this.ctx) {
+          gain.gain.cancelScheduledValues(now);
+          gain.gain.setValueAtTime(gain.gain.value, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.5); // Fade out over 0.5s click-free
+          osc.stop(now + 0.6);
+          lfo?.stop(now + 0.6);
+        } else {
+          osc.stop();
+          lfo?.stop();
+        }
       } catch (e) {}
     });
     this.activeOscillators = [];
@@ -251,6 +326,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const synthRef = useRef<WebAudioSynth | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [musicVolume, setMusicVolume] = useState(0.15);
+  const [soundTheme, setSoundTheme] = useState(0);
   const [isAudioInitialized, setIsAudioInitialized] = useState(false);
 
   useEffect(() => {
@@ -284,6 +360,11 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const handleSetMusicVolume = (vol: number) => {
     setMusicVolume(vol);
     synthRef.current?.setMusicVolume(vol);
+  };
+
+  const handleSetSoundTheme = (theme: number) => {
+    setSoundTheme(theme);
+    synthRef.current?.setSoundTheme(theme);
   };
 
   const playClick = () => {
@@ -320,7 +401,9 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setMuted,
         musicVolume,
         setMusicVolume: handleSetMusicVolume,
-        isAudioInitialized
+        isAudioInitialized,
+        soundTheme,
+        setSoundTheme: handleSetSoundTheme
       }}
     >
       {children}

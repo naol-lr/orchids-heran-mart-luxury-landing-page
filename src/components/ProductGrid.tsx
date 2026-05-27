@@ -4,8 +4,10 @@ import { motion } from 'framer-motion';
 import { Eye, ShoppingBag, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Product } from '@/data/products';
+import { useSound } from '@/context/SoundContext';
 
 function ProductCard({ product }: { product: Product }) {
+  const { playClick, playHover } = useSound();
   const reviews = product.reviews || [];
   const averageRating = reviews.length > 0 
     ? Math.round(reviews.reduce((a, r) => a + r.rating, 0) / reviews.length) 
@@ -19,6 +21,8 @@ function ProductCard({ product }: { product: Product }) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3 }}
+        onMouseEnter={playHover}
+        onClick={playClick}
         className="group relative cursor-pointer overflow-hidden rounded-[2rem] border border-[rgba(193,163,106,0.12)] shadow-[0_2px_16px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-[rgba(193,163,106,0.45)] hover:shadow-[0_0_30px_rgba(193,163,106,0.15),_0_8px_32px_rgba(0,0,0,0.4)] h-full flex flex-col"
         style={{
           background: "rgba(26,26,26,0.8)",
