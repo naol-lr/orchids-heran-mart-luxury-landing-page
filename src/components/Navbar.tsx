@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, User, Menu, X, LogOut, ChevronDown, Settings, Clock, LayoutDashboard } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useSound } from '@/context/SoundContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -27,6 +28,7 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
 
   const { cartCount } = useCart();
   const { setIsModalOpen, setIsLoginView, isLoggedIn, user, userData, logout, loading } = useAuth();
+  const { playClick, playHover } = useSound();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -119,6 +121,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                   <Link
                     key={link.href}
                     href={link.href}
+                    onMouseEnter={playHover}
+                    onClick={playClick}
                     className="relative text-sm tracking-wider uppercase font-light transition-colors duration-200 group"
                     style={{
                       color: isActive ? '#C1A36A' : 'rgba(245,245,245,0.7)',
@@ -139,6 +143,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
               {/* Cart */}
               <Link
                 href="/cart"
+                onMouseEnter={playHover}
+                onClick={playClick}
                 className="relative p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)] hover:shadow-[0_0_15px_rgba(193,163,106,0.2)]"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
                 aria-label="Cart"
@@ -162,7 +168,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                 /* User avatar + dropdown */
                 <div className="relative" ref={userMenuRef}>
                   <button
-                    onClick={() => setUserMenuOpen((v) => !v)}
+                    onClick={() => { playClick(); setUserMenuOpen((v) => !v); }}
+                    onMouseEnter={playHover}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)]"
                     aria-label="User menu"
                   >
@@ -210,7 +217,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                         
                         <Link
                           href="/profile"
-                          onClick={() => setUserMenuOpen(false)}
+                          onMouseEnter={playHover}
+                          onClick={() => { playClick(); setUserMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                         >
                           <User size={14} className="text-[#C1A36A]" />
@@ -220,7 +228,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                         {userData?.isAdmin && (
                           <Link
                             href="/admin"
-                            onClick={() => setUserMenuOpen(false)}
+                            onMouseEnter={playHover}
+                            onClick={() => { playClick(); setUserMenuOpen(false); }}
                             className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
                           >
                             <LayoutDashboard size={14} className="text-[#C1A36A]" />
@@ -229,7 +238,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                         )}
 
                         <button
-                          onClick={handleLogout}
+                          onClick={() => { playClick(); handleLogout(); }}
+                          onMouseEnter={playHover}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                         >
                           <LogOut size={14} />
@@ -246,21 +256,19 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
                     className="p-2 rounded-xl transition-all duration-200 hover:bg-[rgba(193,163,106,0.1)] hover:shadow-[0_0_15px_rgba(193,163,106,0.2)]"
                     style={{ color: 'rgba(245,245,245,0.7)' }}
                     aria-label="Profile"
-                    onClick={() => { setIsLoginView(true); setIsModalOpen(true); }}
+                    onMouseEnter={playHover}
+                    onClick={() => { playClick(); setIsLoginView(true); setIsModalOpen(true); }}
                   >
                     <User size={18} />
                   </button>
                   <button
-                    onClick={() => { setIsLoginView(true); setIsModalOpen(true); }}
+                    onClick={() => { playClick(); setIsLoginView(true); setIsModalOpen(true); }}
+                    onMouseEnter={playHover}
                     className="hidden sm:flex items-center px-4 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200"
                     style={{
                       background: 'linear-gradient(135deg, #C1A36A 0%, #8E7A53 100%)',
                       color: '#0D0D0D',
                       boxShadow: '0 0 15px rgba(193,163,106,0.25)',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow =
-                        '0 0 25px rgba(193,163,106,0.5)';
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLElement).style.boxShadow =
@@ -276,7 +284,8 @@ export default function Navbar({ logoVisible = true }: NavbarProps) {
               <button
                 className="md:hidden p-2 rounded-xl"
                 style={{ color: 'rgba(245,245,245,0.7)' }}
-                onClick={() => setMobileOpen((v) => !v)}
+                onMouseEnter={playHover}
+                onClick={() => { playClick(); setMobileOpen((v) => !v); }}
                 aria-label="Menu"
               >
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}

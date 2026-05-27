@@ -5,6 +5,8 @@ import { VisualEditsMessenger } from "orchids-visual-edits";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
+import { SoundProvider } from "@/context/SoundContext";
+import SoundControlCenter from "@/components/SoundControlCenter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,10 +42,13 @@ export default function RootLayout({
         <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.03] bg-[url('https://upload.wikimedia.org/wikipedia/commons/a/a2/Noise_Texture.png')] mix-blend-overlay"></div>
         <div className="relative z-10">
         <AuthProvider>
-          <CartProvider>
-            {children}
-            <AuthModal />
-          </CartProvider>
+          <SoundProvider>
+            <CartProvider>
+              {children}
+              <AuthModal />
+              <SoundControlCenter />
+            </CartProvider>
+          </SoundProvider>
         </AuthProvider>
           <VisualEditsMessenger />
         </div>
