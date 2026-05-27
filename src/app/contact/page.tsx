@@ -25,22 +25,48 @@ function useStoreOpen() {
 
   useEffect(() => {
     const checkStatus = () => {
-      const now = new Date();
-      const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      const hour = now.getHours();
-      const minutes = now.getMinutes();
-      const timeInHours = hour + minutes / 60;
+      try {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Los_Angeles",
+          hour: "numeric",
+          minute: "numeric",
+          weekday: "long",
+          hour12: false
+        });
 
-      const schedule = openingHours.find(h => h.dayIndex === day);
-      if (schedule) {
-        const open = timeInHours >= schedule.openHour && timeInHours < schedule.closeHour;
-        setIsOpen(open);
-        
-        // Format closing time
-        const closesAtHour12 = schedule.closeHour > 12 ? schedule.closeHour - 12 : schedule.closeHour;
-        setClosesAt(`${closesAtHour12}:00 PM`);
+        const parts = formatter.formatToParts(now);
+        const partMap = Object.fromEntries(parts.map(p => [p.type, p.value]));
+
+        const dayName = partMap.weekday;
+        const hour = parseInt(partMap.hour, 10);
+        const minute = parseInt(partMap.minute, 10);
+        const timeInHours = hour + minute / 60;
+
+        const dayIndexMap: { [key: string]: number } = {
+          Sunday: 0,
+          Monday: 1,
+          Tuesday: 2,
+          Wednesday: 3,
+          Thursday: 4,
+          Friday: 5,
+          Saturday: 6
+        };
+        const day = dayIndexMap[dayName];
+
+        const schedule = openingHours.find(h => h.dayIndex === day);
+        if (schedule) {
+          const open = timeInHours >= schedule.openHour && timeInHours < schedule.closeHour;
+          setIsOpen(open);
+          
+          // Format closing time
+          const closesAtHour12 = schedule.closeHour > 12 ? schedule.closeHour - 12 : schedule.closeHour;
+          setClosesAt(`${closesAtHour12}:00 PM`);
+        }
+        setCurrentDayIndex(day);
+      } catch (err) {
+        console.error("Error calculating timezone-aware store status:", err);
       }
-      setCurrentDayIndex(day);
     };
 
     checkStatus();
