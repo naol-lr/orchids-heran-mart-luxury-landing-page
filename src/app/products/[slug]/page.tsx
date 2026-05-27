@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase/firebase';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, setDoc } from 'firebase/firestore';
 
 export default function ProductPage() {
   const params = useParams();
@@ -133,22 +133,37 @@ export default function ProductPage() {
       localStorage.setItem(localReviewsKey, JSON.stringify(localReviews));
 
       // Attempt to send to database if possible
-      try {
-        const res = await fetch('/api/reviews', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            productId: product.id || product.slug, 
-            review: newReview 
-          })
-        });
-
-        if (!res.ok) {
-          const errorData = await res.json();
-          console.warn('API review submission returned error (falling back to local):', errorData.error);
+      let success = false;
+      if (db) {
+        try {
+          const productRef = doc(db, 'products', product.id || product.slug);
+          await setDoc(productRef, {
+            reviews: [...(product.reviews || []), newReview]
+          }, { merge: true });
+          success = true;
+        } catch (dbErr) {
+          console.warn('Direct client update failed, trying API:', dbErr);
         }
-      } catch (apiErr) {
-        console.warn('API review submission failed (falling back to local):', apiErr);
+      }
+
+      if (!success) {
+        try {
+          const res = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              productId: product.id || product.slug, 
+              review: newReview 
+            })
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json();
+            console.warn('API review submission returned error (falling back to local):', errorData.error);
+          }
+        } catch (apiErr) {
+          console.warn('API review submission failed (falling back to local):', apiErr);
+        }
       }
 
       const updatedReviews = [...(product.reviews || []), newReview];
@@ -314,7 +329,7 @@ export default function ProductPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-6 overflow-hidden rounded-2xl border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.05)] p-6"
+                className="mt-6 overflow-hidden rounded-2xl border border-[rgba(193,163,106,0.3)] bg-[rgba(193,163,106,0.05)] p-4 sm:p-6"
                 onSubmit={handleSubmitReview}
               >
                 <h3 className="mb-4 text-lg font-medium text-white">Share your experience</h3>

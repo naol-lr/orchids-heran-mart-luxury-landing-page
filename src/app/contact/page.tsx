@@ -61,14 +61,31 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      
-      if (!res.ok) {
-        throw new Error('Failed to send message');
+      let success = false;
+      if (db) {
+        try {
+          await addDoc(collection(db, 'messages'), {
+            name: form.name,
+            email: form.email,
+            message: form.message,
+            createdAt: serverTimestamp(),
+          });
+          success = true;
+        } catch (err) {
+          console.warn("Client DB write failed, trying API:", err);
+        }
+      }
+
+      if (!success) {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to send message');
+        }
       }
 
       setSubmitted(true);

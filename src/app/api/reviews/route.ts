@@ -13,19 +13,15 @@ export async function POST(req: Request) {
       const productRef = adminDb.collection('products').doc(productId);
       const productDoc = await productRef.get();
 
-      if (!productDoc.exists) {
-        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-      }
-
-      const productData = productDoc.data();
+      const productData = productDoc.exists ? productDoc.data() : {};
       const existingReviews = productData?.reviews || [];
       
       // Add the new review
       const updatedReviews = [...existingReviews, review];
 
-      await productRef.update({
+      await productRef.set({
         reviews: updatedReviews
-      });
+      }, { merge: true });
 
       return NextResponse.json({ success: true, reviews: updatedReviews });
     } catch (dbError: any) {
