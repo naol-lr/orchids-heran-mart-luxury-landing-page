@@ -8,37 +8,48 @@ import { db } from "@/lib/firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // Store hours logic
+const openingHours = [
+  { dayIndex: 1, dayName: "Monday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 2, dayName: "Tuesday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 3, dayName: "Wednesday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 4, dayName: "Thursday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 5, dayName: "Friday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 6, dayName: "Saturday", time: "10:00 AM – 9:00 PM", openHour: 10, closeHour: 21 },
+  { dayIndex: 0, dayName: "Sunday", time: "10:00 AM – 8:00 PM", openHour: 10, closeHour: 20 },
+];
+
 function useStoreOpen() {
   const [isOpen, setIsOpen] = useState(false);
   const [closesAt, setClosesAt] = useState("");
+  const [currentDayIndex, setCurrentDayIndex] = useState(-1);
 
   useEffect(() => {
-    const now = new Date();
-    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const hour = now.getHours();
+    const checkStatus = () => {
+      const now = new Date();
+      const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      const hour = now.getHours();
+      const minutes = now.getMinutes();
+      const timeInHours = hour + minutes / 60;
 
-    let open = false;
-    let closingTime = "";
+      const schedule = openingHours.find(h => h.dayIndex === day);
+      if (schedule) {
+        const open = timeInHours >= schedule.openHour && timeInHours < schedule.closeHour;
+        setIsOpen(open);
+        
+        // Format closing time
+        const closesAtHour12 = schedule.closeHour > 12 ? schedule.closeHour - 12 : schedule.closeHour;
+        setClosesAt(`${closesAtHour12}:00 PM`);
+      }
+      setCurrentDayIndex(day);
+    };
 
-    if (day >= 1 && day <= 6) { // Monday to Saturday
-      open = hour >= 10 && hour < 21; // 10 AM to 9 PM
-      closingTime = "9:00 PM";
-    } else if (day === 0) { // Sunday
-      open = hour >= 10 && hour < 20; // 10 AM to 8 PM
-      closingTime = "8:00 PM";
-    }
-
-    setIsOpen(open);
-    setClosesAt(closingTime);
+    checkStatus();
+    const interval = setInterval(checkStatus, 60000);
+    return () => clearInterval(interval);
   }, []);
 
-  return { isOpen, closesAt };
+  return { isOpen, closesAt, currentDayIndex };
 }
-
-const hours = [
-  { day: "Monday – Saturday", time: "10:00 AM – 9:00 PM" },
-  { day: "Sunday", time: "10:00 AM – 8:00 PM" },
-];
 
 const socialLinks = [
     { icon: Instagram, label: "@heranmart", sub: "Follow on Instagram", color: "#E1306C", href: "#" },
@@ -47,7 +58,7 @@ const socialLinks = [
 ];
 
 export default function ContactPage() {
-  const { isOpen, closesAt } = useStoreOpen();
+  const { isOpen, closesAt, currentDayIndex } = useStoreOpen();
   const formRef = useRef(null);
   const formInView = useInView(formRef, { once: true, margin: "-60px" });
   const infoRef = useRef(null);
@@ -137,17 +148,19 @@ export default function ContactPage() {
           <motion.div
             ref={infoRef}
             initial={{ opacity: 0, x: -40 }}
-            animate={infoInView ? { opacity: 1, x: 0 } : {}}
+            animate={infoInView ? { 
+              opacity: 1, 
+              x: 0,
+              borderColor: isOpen ? "rgba(74, 222, 128, 0.4)" : "rgba(193, 163, 106, 0.25)",
+              boxShadow: isOpen 
+                ? "0 0 40px rgba(74, 222, 128, 0.12), 0 8px 32px rgba(0, 0, 0, 0.5)" 
+                : "0 0 40px rgba(193, 163, 106, 0.05), 0 8px 32px rgba(0, 0, 0, 0.5)"
+            } : {}}
             transition={{ duration: 0.7 }}
             className="rounded-3xl p-8"
             style={{
               background: "rgba(26,26,26,0.7)",
-              border: isOpen
-                ? "1px solid rgba(74,222,128,0.3)"
-                : "1px solid rgba(193,163,106,0.15)",
-              boxShadow: isOpen
-                ? "0 0 40px rgba(74,222,128,0.08), 0 8px 32px rgba(0,0,0,0.4)"
-                : "0 8px 32px rgba(0,0,0,0.4)",
+              border: "1px solid",
               backdropFilter: "blur(20px)",
             }}
           >
@@ -198,8 +211,8 @@ export default function ContactPage() {
                 <p className="text-sm font-medium mb-0.5" style={{ color: "#F5F5F5" }}>
                   Store Address
                 </p>
-                <p className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>
-                3455 S Durango Dr, Las Vegas NV
+                <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(245,245,245,0.5)" }}>
+                7835 S Rainbow Blvd ste 26,<br />Las Vegas, NV 89139, United States
                 </p>
               </div>
             </div>
@@ -259,14 +272,47 @@ export default function ContactPage() {
                   Opening Hours
                 </span>
               </div>
-              <div className="space-y-2">
-                {hours.map((h) => (
-                  <div key={h.day} className="flex justify-between items-center py-2"
-                    style={{ borderBottom: "1px solid rgba(193,163,106,0.08)" }}>
-                    <span className="text-sm font-light" style={{ color: "rgba(245,245,245,0.5)" }}>{h.day}</span>
-                    <span className="text-sm font-medium" style={{ color: "#F5F5F5" }}>{h.time}</span>
-                  </div>
-                ))}
+              <div className="space-y-2.5">
+                {openingHours.map((h) => {
+                  const isToday = h.dayIndex === currentDayIndex;
+                  return (
+                    <div 
+                      key={h.dayName} 
+                      className="flex justify-between items-center py-2 px-3 rounded-xl transition-all duration-300"
+                      style={{ 
+                        background: isToday ? "rgba(193,163,106,0.06)" : "transparent",
+                        border: isToday ? "1px solid rgba(193,163,106,0.15)" : "1px solid transparent",
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="text-sm font-light" 
+                          style={{ color: isToday ? "#C1A36A" : "rgba(245,245,245,0.5)" }}
+                        >
+                          {h.dayName}
+                        </span>
+                        {isToday && (
+                          <span 
+                            className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider"
+                            style={{ 
+                              background: isOpen ? "rgba(74,222,128,0.12)" : "rgba(239,68,68,0.12)",
+                              color: isOpen ? "#4ade80" : "#ef4444",
+                              border: `1px solid ${isOpen ? "rgba(74,222,128,0.2)" : "rgba(239,68,68,0.2)"}`
+                            }}
+                          >
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <span 
+                        className="text-sm font-medium" 
+                        style={{ color: isToday ? "#F5F5F5" : "rgba(245,245,245,0.8)" }}
+                      >
+                        {h.time}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
@@ -283,7 +329,7 @@ export default function ContactPage() {
             }}
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d664.7178817412688!2d-115.24390690000001!3d36.046428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c8c98c3feb2a1b%3A0xc553741073a10d26!2sHERAN%20mart!5e1!3m2!1sen!2set!4v1772850849581!5m2!1sen!2set"
+              src="https://maps.google.com/maps?q=7835%20S%20Rainbow%20Blvd%20ste%2026,%20Las%20Vegas,%20NV%2089139&t=&z=15&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="100%"
               style={{

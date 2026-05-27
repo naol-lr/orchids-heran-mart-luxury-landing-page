@@ -11,7 +11,9 @@ import {
   Package, 
   CheckCircle, 
   TrendingUp,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Mail,
+  Trash2
 } from 'lucide-react';
 import { db } from '@/lib/firebase/firebase';
 import { 
@@ -27,7 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { seedProducts } from '@/lib/firebase/seed';
 import { Product } from '@/data/products';
 
-type AdminTab = 'orders' | 'products' | 'users';
+type AdminTab = 'orders' | 'products' | 'messages';
 
 interface ProductReview {
   rating: number;
@@ -45,6 +47,14 @@ interface Order {
   items?: Array<{ name: string; quantity: number }>;
 }
 
+interface Message {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: Date;
+}
+
 export default function AdminDashboard() {
   const { userData, isLoggedIn, loading } = useAuth();
   const router = useRouter();
@@ -53,6 +63,7 @@ export default function AdminDashboard() {
   // Data State
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   
   // Form State
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -115,6 +126,17 @@ export default function AdminDashboard() {
       // Fetch Products
       const productsSnap = await getDocs(collection(db, 'products'));
       setProducts(productsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
+
+      // Fetch Messages
+      const messagesSnap = await getDocs(query(collection(db!, 'messages'), orderBy('createdAt', 'desc')));
+      setMessages(messagesSnap.docs.map(d => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ...data,
+          createdAt: (data as { createdAt?: { toDate: () => Date } }).createdAt?.toDate() || new Date()
+        } as Message;
+      }));
     } catch (err) {
       console.error('Error fetching admin data:', err);
     }
@@ -223,6 +245,17 @@ export default function AdminDashboard() {
     }
   };
 
+  const deleteMessage = async (messageId: string) => {
+    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    try {
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      await deleteDoc(doc(db!, 'messages', messageId));
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+    } catch (err) {
+      console.error('Failed to delete message:', err);
+    }
+  };
+
   if (loading || !isLoggedIn || !userData?.isAdmin) {
     return (
       <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center">
@@ -246,7 +279,7 @@ export default function AdminDashboard() {
             </h1>
           </div>
 
-          <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
+          <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 flex-wrap md:flex-nowrap gap-1">
             <button
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
@@ -269,11 +302,22 @@ export default function AdminDashboard() {
               <ShoppingBag size={16} />
               Products
             </button>
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                activeTab === 'messages' 
+                ? 'bg-[#C1A36A] text-black' 
+                : 'text-white/60 hover:text-white'
+              }`}
+            >
+              <Mail size={16} />
+              Messages
+            </button>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
            <div className="glass-strong p-8 rounded-3xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                  <div className="w-12 h-12 bg-[#C1A36A]/10 rounded-2xl flex items-center justify-center text-[#C1A36A]">
@@ -303,6 +347,16 @@ export default function AdminDashboard() {
               </div>
               <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Products</p>
               <h3 className="text-3xl font-bold">{products.length}</h3>
+           </div>
+
+           <div className="glass-strong p-8 rounded-3xl border border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                 <div className="w-12 h-12 bg-pink-500/10 rounded-2xl flex items-center justify-center text-pink-400">
+                    <Mail size={24} />
+                 </div>
+              </div>
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Messages</p>
+              <h3 className="text-3xl font-bold">{messages.length}</h3>
            </div>
         </div>
 
@@ -396,7 +450,7 @@ export default function AdminDashboard() {
                  )}
               </div>
             </motion.div>
-          ) : (
+          ) : activeTab === 'products' ? (
             <motion.div
                key="products"
                initial={{ opacity: 0, y: 20 }}
@@ -549,6 +603,73 @@ export default function AdminDashboard() {
                         </AnimatePresence>
                      </div>
                   ))}
+               </div>
+            </motion.div>
+          ) : (
+            <motion.div
+               key="messages"
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -20 }}
+               className="space-y-6"
+            >
+               <h2 className="text-2xl font-[family-name:var(--font-playfair)] mb-6">Customer Messages</h2>
+               
+               <div className="glass-strong rounded-3xl border border-white/10 overflow-hidden">
+                 <div className="overflow-x-auto">
+                   <table className="w-full text-left">
+                      <thead>
+                         <tr className="bg-white/5 border-b border-white/10">
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Sender</th>
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Email</th>
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Message</th>
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Date</th>
+                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-white/40">Actions</th>
+                         </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                         {messages.map(msg => (
+                            <tr key={msg.id} className="hover:bg-white/[0.02] transition-colors">
+                               <td className="px-6 py-6 font-bold text-sm">
+                                  {msg.name}
+                               </td>
+                               <td className="px-6 py-6 text-xs text-white/70">
+                                  {msg.email}
+                                </td>
+                               <td className="px-6 py-6 text-xs text-white/60 max-w-sm whitespace-pre-wrap leading-relaxed">
+                                  {msg.message}
+                               </td>
+                               <td className="px-6 py-6 text-xs text-white/40">
+                                  {msg.createdAt.toLocaleDateString()} {msg.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               </td>
+                               <td className="px-6 py-6">
+                                  <div className="flex gap-2">
+                                     <a 
+                                       href={`mailto:${msg.email}?subject=Regarding your message to HERAN Mart&body=Hi ${msg.name},%0D%0A%0D%0AThank you for contacting HERAN Mart. We received your message: "${msg.message.length > 50 ? msg.message.slice(0, 50) + '...' : msg.message}"%0D%0A%0D%0A`}
+                                       className="p-2 hover:bg-[#C1A36A]/10 text-white/40 hover:text-[#C1A36A] rounded-lg transition-all duration-200"
+                                       title="Reply by Email"
+                                     >
+                                        <Mail size={18} />
+                                     </a>
+                                     <button 
+                                       onClick={() => deleteMessage(msg.id)}
+                                       className="p-2 hover:bg-red-500/10 text-white/40 hover:text-red-500 rounded-lg transition-all duration-200"
+                                       title="Delete Message"
+                                     >
+                                        <Trash2 size={18} />
+                                     </button>
+                                  </div>
+                               </td>
+                            </tr>
+                         ))}
+                      </tbody>
+                   </table>
+                 </div>
+                 {messages.length === 0 && (
+                    <div className="p-20 text-center">
+                       <p className="text-white/40">No messages received yet.</p>
+                    </div>
+                 )}
                </div>
             </motion.div>
           )}

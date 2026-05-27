@@ -16,7 +16,7 @@ const socialLinks = [
 ];
 
 const contactInfo = [
-  { icon: MapPin, text: "3455 S Durango Dr, Las Vegas NV" },
+  { icon: MapPin, text: "7835 S Rainbow Blvd ste 26, Las Vegas, NV 89139, United States" },
   { icon: Phone, text: "+1 (702) 555-0123" },
   { icon: Mail, text: "hello@heranmart.com" },
 ];
